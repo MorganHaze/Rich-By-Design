@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   define: {
-    'process.env.API_KEY': JSON.stringify(process.env.API_KEY)
+    // Ensure the key is stringified safely even if undefined
+    'process.env.API_KEY': JSON.stringify(process.env.API_KEY || "")
   }
 });
