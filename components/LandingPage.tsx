@@ -112,7 +112,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
               <h1 className="text-5xl lg:text-7xl font-black text-navy-900 font-serif leading-[1.05] tracking-tight mb-8">
                 Rich By Design: <br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-navy-900 via-navy-700 to-gold-600 italic font-medium font-sans block mt-2">
-                  Making Money Simple.
+                  Money Made Easy.
                 </span>
               </h1>
               <p className="text-xl text-gray-500 max-w-2xl leading-relaxed mb-10 font-medium">
