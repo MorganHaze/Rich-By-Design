@@ -1,26 +1,15 @@
-
 import React, { useState } from 'react';
 import { BookDetails, ChatMessage } from '../types';
 import { chatWithBook } from '../services/geminiService';
 import { Button } from './ui/Button';
 import { 
-  CheckCircle, 
-  BookOpen, 
-  Star, 
-  Send, 
   TrendingUp, 
-  ShieldCheck, 
-  User, 
+  Send, 
   ExternalLink, 
-  Globe, 
-  Heart, 
-  Zap, 
-  Anchor, 
-  Users,
-  ChevronDown,
-  Layout,
-  // Fix: Added missing ArrowRight icon import
-  ArrowRight
+  ArrowRight,
+  Linkedin,
+  Instagram,
+  Twitter
 } from 'lucide-react';
 
 interface LandingPageProps {
@@ -65,9 +54,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Constructing the Amazon Image URL based on the ASIN provided in App.tsx (B0FN334YXZ)
+  const coverImageUrl = "https://m.media-amazon.com/images/P/B0FN334YXZ.01.20.LZZZZZZZ.jpg";
+
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900 selection:bg-gold-200">
-      {/* Premium Navigation - Updated to match current site structure */}
+      {/* Premium Navigation */}
       <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="flex justify-between h-20 items-center">
@@ -78,11 +70,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
               <div className="hidden lg:flex items-center space-x-8">
                 <button className="text-[11px] font-black uppercase tracking-widest text-navy-900 border-b-2 border-gold-500">Home</button>
                 <button onClick={() => scrollTo('book-section')} className="text-[11px] font-black uppercase tracking-widest text-gray-500 hover:text-navy-900 transition-colors">Book</button>
-                <div className="group relative">
-                  <button className="flex items-center text-[11px] font-black uppercase tracking-widest text-gray-500 hover:text-navy-900 transition-colors">
-                    Blog <ChevronDown className="w-3 h-3 ml-1" />
-                  </button>
-                </div>
                 <button className="text-[11px] font-black uppercase tracking-widest text-gray-500 hover:text-navy-900 transition-colors">Resources</button>
                 <button className="text-[11px] font-black uppercase tracking-widest text-gray-500 hover:text-navy-900 transition-colors">Giving Back</button>
               </div>
@@ -107,7 +94,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
             <div className="lg:col-span-7 z-10 relative">
               <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-gold-50 text-gold-700 text-[10px] font-black uppercase tracking-widest mb-8 border border-gold-100 shadow-sm">
                 <TrendingUp className="w-3.5 h-3.5 mr-2" />
-                The Wealth Architecture has Arrived
+                Wealth Architecture Revealed
               </div>
               <h1 className="text-5xl lg:text-7xl font-black text-navy-900 font-serif leading-[1.05] tracking-tight mb-8">
                 Rich By Design: <br/>
@@ -129,29 +116,33 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
             </div>
             
             <div className="mt-20 lg:mt-0 lg:col-span-5 flex justify-center lg:justify-end perspective-1000">
-              {/* Premium 3D Book Visual */}
-              <div className="relative group transition-transform duration-700 hover:scale-105" style={{ transform: 'rotateY(-15deg) rotateX(5deg)' }}>
-                <div className="absolute -inset-10 bg-gold-400/20 blur-[100px] rounded-full opacity-50 group-hover:opacity-80 transition-opacity"></div>
-                <div className="w-72 h-[450px] bg-navy-900 rounded-r-2xl rounded-l-sm shadow-[20px_30px_60px_rgba(0,0,0,0.4)] relative overflow-hidden border-l-[6px] border-white/10">
-                  <div className="absolute inset-0 bg-gradient-to-tr from-black/20 via-transparent to-white/10"></div>
-                  <div className="p-10 flex flex-col h-full text-center items-center justify-between relative z-10">
-                    <div>
-                      <h4 className="text-white font-serif text-5xl font-black leading-none mb-2 tracking-tighter">RICH</h4>
-                      <h5 className="text-white text-xl font-light mb-2">BY</h5>
-                      <h4 className="text-gold-400 font-serif text-5xl font-black leading-none tracking-tighter">DESIGN</h4>
-                    </div>
-                    <div>
-                      <p className="text-white text-xs font-black tracking-[0.3em] uppercase opacity-60 mb-1">Money Made Simple</p>
-                      <div className="h-0.5 w-12 bg-gold-400 mx-auto"></div>
-                    </div>
-                    <div className="w-full">
-                      <p className="text-white text-xl font-black tracking-widest uppercase font-sans border-t border-white/5 pt-6">MORGAN HAZE</p>
-                    </div>
-                  </div>
+              <div className="relative group transition-transform duration-700 hover:scale-105" style={{ transform: 'rotateY(-18deg) rotateX(4deg)' }}>
+                {/* Book Shadow & Glow */}
+                <div className="absolute -inset-10 bg-navy-900/10 blur-[80px] rounded-full opacity-50 group-hover:opacity-80 transition-opacity"></div>
+                
+                {/* Physical Book Representation */}
+                <div className="relative w-72 h-[440px] shadow-[20px_35px_80px_rgba(0,0,0,0.4)] transition-all duration-500 rounded-r-lg overflow-hidden flex">
+                  {/* Spine Highlight Effect */}
+                  <div className="absolute left-0 top-0 bottom-0 w-[12px] bg-gradient-to-r from-black/30 via-transparent to-white/10 z-20"></div>
+                  
+                  {/* The Actual Amazon Cover Image */}
+                  <img 
+                    src={coverImageUrl} 
+                    alt="Rich By Design Book Cover" 
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback in case Amazon image link has issues
+                      (e.target as any).style.display = 'none';
+                    }}
+                  />
+                  
+                  {/* Realistic Glaze/Finish */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 pointer-events-none"></div>
                 </div>
-                {/* Book Spine Simulation */}
-                <div className="absolute left-0 top-[2%] bottom-[2%] -translate-x-full w-12 bg-navy-950 origin-right -rotate-y-90 shadow-inner flex items-center justify-center">
-                   <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.5em] -rotate-90 whitespace-nowrap">RICH BY DESIGN • MORGAN HAZE</p>
+
+                {/* Badge Overlay */}
+                <div className="absolute -bottom-6 -right-6 bg-gold-500 text-navy-900 px-6 py-4 rounded-2xl shadow-2xl font-black text-xs uppercase tracking-widest transform -rotate-12 border-4 border-white">
+                  Out Now
                 </div>
               </div>
             </div>
@@ -181,7 +172,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
         </div>
       </section>
 
-      {/* AI Mentor - The Interactive Part */}
+      {/* AI Mentor */}
       <section id="ai-preview" className="py-32 bg-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="flex flex-col lg:flex-row items-center gap-20">
@@ -191,18 +182,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
                     Consult the <span className="text-gold-500">Wealth AI</span>
                 </h3>
                 <p className="text-xl text-gray-500 leading-relaxed mb-10 font-medium">
-                    The book's philosophy is alive. Ask the AI mentor how to apply the 70-10-10-10 rule to your specific situation, or clarify any of the Seven Laws.
+                    The book's philosophy is alive. Ask the AI mentor how to apply the Wealth Laws to your specific life situation.
                 </p>
-                <div className="space-y-4">
-                    <div className="flex items-center gap-4 text-navy-900 font-bold">
-                        <div className="p-2 bg-navy-50 rounded-lg"><Zap className="w-5 h-5 text-gold-500" /></div>
-                        Instant Strategic Answers
-                    </div>
-                    <div className="flex items-center gap-4 text-navy-900 font-bold">
-                        <div className="p-2 bg-navy-50 rounded-lg"><ShieldCheck className="w-5 h-5 text-gold-500" /></div>
-                        Grounded in Book Principles
-                    </div>
-                </div>
             </div>
             
             <div className="lg:w-1/2 w-full">
@@ -221,7 +202,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
                   ))}
                   {isChatLoading && (
                     <div className="flex justify-start">
-                       <div className="bg-white/10 border border-white/10 px-6 py-4 rounded-3xl rounded-bl-none shadow-sm">
+                       <div className="bg-white/10 border border-white/10 px-6 py-4 rounded-3xl rounded-bl-none">
                          <div className="flex space-x-2">
                            <div className="w-2 h-2 bg-gold-400 rounded-full animate-bounce"></div>
                            <div className="w-2 h-2 bg-gold-400 rounded-full animate-bounce delay-75"></div>
@@ -238,9 +219,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
                       value={chatInput}
                       onChange={(e) => setChatInput(e.target.value)}
                       placeholder="Ask the Wealth AI..."
-                      className="flex-1 bg-white/5 border border-white/10 text-white rounded-2xl px-6 py-4 focus:ring-2 focus:ring-gold-500 outline-none transition-all placeholder:text-navy-400"
+                      className="flex-1 bg-white/5 border border-white/10 text-white rounded-2xl px-6 py-4 outline-none"
                     />
-                    <button type="submit" disabled={isChatLoading || !chatInput.trim()} className="bg-gold-500 hover:bg-gold-400 text-navy-900 font-black p-4 rounded-2xl transition-all shadow-lg hover:shadow-gold-500/20 disabled:opacity-50">
+                    <button type="submit" disabled={isChatLoading || !chatInput.trim()} className="bg-gold-500 hover:bg-gold-400 text-navy-900 font-black p-4 rounded-2xl transition-all shadow-lg">
                       <Send className="w-5 h-5" />
                     </button>
                   </form>
@@ -253,34 +234,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
 
       {/* Final CTA */}
       <section className="py-32 bg-navy-900 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-navy-900 to-navy-950"></div>
-        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-gold-500/10 blur-[120px] rounded-full"></div>
-        
         <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
             <h2 className="text-4xl lg:text-6xl font-black text-white font-serif uppercase tracking-tighter mb-8 leading-tight">
                 Stop Surviving. <br/>
                 <span className="text-gold-500">Start Designing.</span>
             </h2>
-            <p className="text-navy-200 text-xl mb-12 font-medium leading-relaxed">
-                Available now on Amazon in Paperback and Kindle editions. Build your financial fortress today.
-            </p>
             <Button onClick={handleBuyClick} variant="secondary" className="h-20 px-16 text-lg rounded-3xl shadow-2xl hover:scale-105 transition-transform">
                 Get Your Copy Now <ArrowRight className="ml-3 w-6 h-6" />
             </Button>
         </div>
       </section>
 
-      {/* Minimal Footer */}
+      {/* Footer */}
       <footer className="bg-white py-12 border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="text-sm font-black text-navy-900 tracking-tighter uppercase">
                 Rich By Design<span className="text-gold-500">HQ</span>
             </div>
             <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">
-                © 2025 Morgan Haze. All Rights Reserved.
+                © 2025 {book.author}. All Rights Reserved.
             </p>
         </div>
       </footer>
     </div>
   );
-};
