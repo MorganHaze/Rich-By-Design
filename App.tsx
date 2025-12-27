@@ -8,13 +8,13 @@ const initialBook: BookDetails = {
   title: "RICH BY DESIGN",
   subtitle: "Money Made Easy",
   author: "Morgan Haze",
-  description: "This book isn't about chasing wealth. It's about designing it with intention, clarity, and confidence. It's a roadmap built on stories, systems, setbacks, and comebacks. You'll stop surviving and start designing. Because the truth is: nobody gets rich by accident. They get rich from their decisions.",
+  description: "This book is about creating wealth through intentional design and strategic action. It's a roadmap built on stories, systems, setbacks, and comebacks. You'll stop surviving and start designing. Because the truth is: nobody gets rich by accident. They get rich from their decisions.",
   targetAudience: "Individuals who feel 'behind' financially and are looking for a structural system to build lasting, holistic wealth.",
   keyTakeaways: [
-    "Law 1. Save at least one-tenth of all you earn. Pay yourself first, always.",
-    "Law 2. Control your expenditures. Budget your lifestyle to ensure you save first.",
+    "Law 1. Invest at least one-tenth of all you earn. Pay yourself first, always.",
+    "Law 2. Live within your means. Budget your lifestyle to ensure you invest first.",
     "Law 3. Make your money multiple. Invest in ventures you understand.",
-    "Law 4. Guard your treasures from loss. Seek wise counsel and avoid risky schemes.",
+    "Law 4. Guard your investments from loss. Seek wise counsel and avoid risky schemes.",
     "Law 5. Own your home. Build equity and security through property.",
     "Law 6. Ensure a future income. Plan for retirement and passive streams.",
     "Law 7. Increase your ability to earn. Continuously develop your skills and value."
@@ -69,7 +69,7 @@ const App: React.FC = () => {
       {/* Sync Status Badge */}
       <div className="fixed bottom-6 left-6 z-[60] bg-white/90 backdrop-blur-md border border-gray-100 px-4 py-2 rounded-xl flex items-center gap-3 shadow-lg pointer-events-none">
         <Activity className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
-        <span className="text-[9px] font-black text-navy-900 uppercase tracking-widest">v2.0.0 SYNCED</span>
+        <span className="text-[9px] font-black text-navy-900 uppercase tracking-widest">v2.1.0 SYNCED</span>
       </div>
 
       <main>
