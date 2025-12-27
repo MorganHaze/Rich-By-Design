@@ -7,9 +7,7 @@ import {
   Send, 
   ExternalLink, 
   ArrowRight,
-  Linkedin,
-  Instagram,
-  Twitter
+  ChevronRight
 } from 'lucide-react';
 
 interface LandingPageProps {
@@ -54,8 +52,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Constructing the Amazon Image URL based on the ASIN provided in App.tsx (B0FN334YXZ)
-  const coverImageUrl = "https://m.media-amazon.com/images/P/B0FN334YXZ.01.20.LZZZZZZZ.jpg";
+  // ASIN from Amazon for your book
+  const asin = "B0FN334YXZ";
+  const coverImageUrl = `https://m.media-amazon.com/images/P/${asin}.01.20.LZZZZZZZ.jpg`;
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900 selection:bg-gold-200">
@@ -96,10 +95,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
                 <TrendingUp className="w-3.5 h-3.5 mr-2" />
                 Wealth Architecture Revealed
               </div>
-              <h1 className="text-5xl lg:text-7xl font-black text-navy-900 font-serif leading-[1.05] tracking-tight mb-8">
-                Rich By Design: <br/>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-navy-900 via-navy-700 to-gold-600 italic font-medium font-sans block mt-2">
-                  Money Made Easy.
+              <h1 className="text-5xl lg:text-7xl font-black text-navy-900 font-serif leading-[1.05] tracking-tight mb-8 uppercase">
+                {book.title}: <br/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-navy-900 via-navy-700 to-gold-600 italic font-medium font-sans block mt-2 normal-case">
+                  {book.subtitle}
                 </span>
               </h1>
               <p className="text-xl text-gray-500 max-w-2xl leading-relaxed mb-10 font-medium">
@@ -116,33 +115,33 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
             </div>
             
             <div className="mt-20 lg:mt-0 lg:col-span-5 flex justify-center lg:justify-end perspective-1000">
-              <div className="relative group transition-transform duration-700 hover:scale-105" style={{ transform: 'rotateY(-18deg) rotateX(4deg)' }}>
-                {/* Book Shadow & Glow */}
-                <div className="absolute -inset-10 bg-navy-900/10 blur-[80px] rounded-full opacity-50 group-hover:opacity-80 transition-opacity"></div>
+              <div className="relative group transition-all duration-700 hover:scale-105" style={{ transform: 'rotateY(-20deg) rotateX(5deg)' }}>
+                {/* Book Glow */}
+                <div className="absolute -inset-10 bg-gold-400/10 blur-[100px] rounded-full opacity-50 group-hover:opacity-80 transition-opacity"></div>
                 
-                {/* Physical Book Representation */}
-                <div className="relative w-72 h-[440px] shadow-[20px_35px_80px_rgba(0,0,0,0.4)] transition-all duration-500 rounded-r-lg overflow-hidden flex">
-                  {/* Spine Highlight Effect */}
-                  <div className="absolute left-0 top-0 bottom-0 w-[12px] bg-gradient-to-r from-black/30 via-transparent to-white/10 z-20"></div>
+                {/* 3D Book Container */}
+                <div className="relative w-72 h-[450px] shadow-[25px_35px_80px_rgba(0,0,0,0.5)] rounded-r-lg flex overflow-hidden">
+                  {/* Spine Effect */}
+                  <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-black/40 via-transparent to-white/10 z-20"></div>
                   
-                  {/* The Actual Amazon Cover Image */}
+                  {/* Actual Amazon Cover */}
                   <img 
                     src={coverImageUrl} 
                     alt="Rich By Design Book Cover" 
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover z-10"
                     onError={(e) => {
-                      // Fallback in case Amazon image link has issues
-                      (e.target as any).style.display = 'none';
+                       // Fallback UI if image fails
+                       (e.target as any).style.display = 'none';
                     }}
                   />
                   
-                  {/* Realistic Glaze/Finish */}
-                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 pointer-events-none"></div>
+                  {/* Premium Glossy Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 pointer-events-none z-30"></div>
                 </div>
 
-                {/* Badge Overlay */}
-                <div className="absolute -bottom-6 -right-6 bg-gold-500 text-navy-900 px-6 py-4 rounded-2xl shadow-2xl font-black text-xs uppercase tracking-widest transform -rotate-12 border-4 border-white">
-                  Out Now
+                {/* Status Badge */}
+                <div className="absolute -bottom-6 -right-6 bg-gold-500 text-navy-900 px-6 py-4 rounded-2xl shadow-2xl font-black text-xs uppercase tracking-widest transform -rotate-12 border-4 border-white z-40">
+                  Best Seller
                 </div>
               </div>
             </div>
@@ -184,11 +183,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
                 <p className="text-xl text-gray-500 leading-relaxed mb-10 font-medium">
                     The book's philosophy is alive. Ask the AI mentor how to apply the Wealth Laws to your specific life situation.
                 </p>
+                <div className="flex items-center gap-4 text-navy-900">
+                   <div className="w-10 h-10 rounded-full bg-gold-50 flex items-center justify-center">
+                     <TrendingUp className="w-5 h-5 text-gold-600" />
+                   </div>
+                   <span className="font-bold text-sm uppercase tracking-widest">Real-time Financial Guidance</span>
+                </div>
             </div>
             
             <div className="lg:w-1/2 w-full">
               <div className="bg-navy-950 rounded-[3rem] shadow-[0_40px_100px_rgba(16,42,67,0.2)] overflow-hidden border border-white/5">
-                <div className="h-[450px] p-8 overflow-y-auto flex flex-col space-y-6 bg-gradient-to-b from-navy-900 to-navy-950">
+                <div className="h-[450px] p-8 overflow-y-auto flex flex-col space-y-6 bg-gradient-to-b from-navy-900 to-navy-950 scrollbar-hide">
                   {chatHistory.map((msg, idx) => (
                     <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2`}>
                       <div className={`max-w-[85%] rounded-3xl px-6 py-4 text-sm font-medium leading-relaxed ${
@@ -219,9 +224,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
                       value={chatInput}
                       onChange={(e) => setChatInput(e.target.value)}
                       placeholder="Ask the Wealth AI..."
-                      className="flex-1 bg-white/5 border border-white/10 text-white rounded-2xl px-6 py-4 outline-none"
+                      className="flex-1 bg-white/5 border border-white/10 text-white rounded-2xl px-6 py-4 outline-none focus:border-gold-500 transition-colors"
                     />
-                    <button type="submit" disabled={isChatLoading || !chatInput.trim()} className="bg-gold-500 hover:bg-gold-400 text-navy-900 font-black p-4 rounded-2xl transition-all shadow-lg">
+                    <button type="submit" disabled={isChatLoading || !chatInput.trim()} className="bg-gold-500 hover:bg-gold-400 text-navy-900 font-black p-4 rounded-2xl transition-all shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50">
                       <Send className="w-5 h-5" />
                     </button>
                   </form>
@@ -234,13 +239,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
 
       {/* Final CTA */}
       <section className="py-32 bg-navy-900 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-navy-900 via-navy-950 to-navy-900 opacity-50"></div>
         <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
             <h2 className="text-4xl lg:text-6xl font-black text-white font-serif uppercase tracking-tighter mb-8 leading-tight">
                 Stop Surviving. <br/>
-                <span className="text-gold-500">Start Designing.</span>
+                <span className="text-gold-500 italic">Start Designing.</span>
             </h2>
-            <Button onClick={handleBuyClick} variant="secondary" className="h-20 px-16 text-lg rounded-3xl shadow-2xl hover:scale-105 transition-transform">
-                Get Your Copy Now <ArrowRight className="ml-3 w-6 h-6" />
+            <Button onClick={handleBuyClick} variant="secondary" className="h-20 px-16 text-lg rounded-3xl shadow-2xl hover:scale-105 transition-transform flex gap-3">
+                Secure Your Copy <ArrowRight className="w-6 h-6" />
             </Button>
         </div>
       </section>
@@ -258,3 +264,4 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
       </footer>
     </div>
   );
+};
