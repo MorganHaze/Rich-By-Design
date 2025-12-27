@@ -10,21 +10,20 @@ import {
   FileText, 
   Zap, 
   CheckCircle2, 
-  TrendingUp, 
   Wifi, 
   WifiOff, 
   Rocket, 
   RefreshCcw, 
   ArrowRight,
-  ShieldCheck,
-  Sparkles,
   Trophy,
   AlertCircle,
   MessageSquare,
   Layout,
-  Instagram,
   Linkedin,
-  Twitter
+  Instagram,
+  Twitter,
+  Globe,
+  ExternalLink
 } from 'lucide-react';
 
 interface MarketingDashboardProps {
@@ -39,7 +38,6 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
   const [apiStatus, setApiStatus] = useState<'checking' | 'active' | 'missing'>('checking');
 
   const isApiActive = apiStatus === 'active';
-  const isApiChecking = apiStatus === 'checking';
 
   useEffect(() => {
     const key = process.env.API_KEY;
@@ -104,7 +102,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                     isApiActive ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200 animate-pulse'
                 }`}>
                     {isApiActive ? <Wifi className="w-3.5 h-3.5 mr-2" /> : <WifiOff className="w-3.5 h-3.5 mr-2" />}
-                    {isApiActive ? 'GEMINI-3 CORE: ACTIVE' : 'SYSTEM: OFFLINE (REDEPLOY REQ)'}
+                    {isApiActive ? 'GEMINI-3 CORE: ACTIVE' : 'SYSTEM: OFFLINE'}
                 </div>
                 <div className="bg-navy-900 text-white px-4 py-2 rounded-2xl text-[10px] font-black flex items-center border border-navy-700 shadow-lg">
                     <Layout className="w-3.5 h-3.5 mr-2 text-gold-400" />
@@ -178,17 +176,29 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                             <h2 className="text-4xl font-black text-navy-900 mb-3 font-serif uppercase tracking-tighter">
                                 Launch Sequence
                             </h2>
-                            <p className="text-gray-500 text-lg max-w-xl">Your domain is active. Now we initialize the AI engine to start scaling your message.</p>
+                            <p className="text-gray-500 text-lg max-w-xl">Initialize the AI engine to start scaling your message across all channels.</p>
                         </div>
 
                         <div className="space-y-6 max-w-2xl">
-                            <div className="flex items-start gap-6 p-8 bg-emerald-50/40 rounded-3xl border border-emerald-100 hover:shadow-md transition-shadow">
-                                <div className="bg-emerald-500 text-white rounded-2xl p-2.5 shadow-lg shadow-emerald-200">
-                                    <CheckCircle2 className="w-6 h-6" />
+                            {/* NEW: Domain Routing Help Box */}
+                            <div className="flex items-start gap-6 p-8 bg-amber-50 rounded-3xl border border-amber-200 shadow-sm">
+                                <div className="bg-amber-500 text-white rounded-2xl p-2.5 shadow-lg shadow-amber-200">
+                                    <Globe className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <h4 className="font-black text-emerald-900 text-xl tracking-tight">Infrastructure: ONLINE</h4>
-                                    <p className="text-sm text-emerald-700 mt-1 font-medium">Domain richbydesignhq.com is mapped and secure.</p>
+                                    <h4 className="font-black text-amber-900 text-xl tracking-tight uppercase">Domain Health Check</h4>
+                                    <p className="text-sm text-amber-800 mt-2 font-medium leading-relaxed">
+                                        You mentioned <strong>richbydesignhq.com</strong> is showing the old site. This is likely due to DNS propagation.
+                                        <br/><br/>
+                                        <strong>1. Fixing the Root:</strong> Ensure your domain A record points to the Vercel IP.
+                                        <br/>
+                                        <strong>2. Fixing "www":</strong> Add a CNAME record in your registrar (GoDaddy/Namecheap) pointing <code className="bg-amber-100 px-1">www</code> to <code className="bg-amber-100 px-1">cname.vercel-dns.com</code>.
+                                    </p>
+                                    <div className="mt-4 flex gap-4">
+                                        <button onClick={() => window.open('https://vercel.com/dashboard', '_blank')} className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1 text-navy-900 bg-white px-3 py-1.5 rounded-lg border border-amber-300 shadow-sm">
+                                            Vercel Domains Panel <ExternalLink className="w-3 h-3" />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -200,7 +210,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                                 </div>
                                 <div className="flex-1">
                                     <h4 className={`font-black text-xl tracking-tight ${isApiActive ? 'text-emerald-900' : 'text-navy-900'}`}>
-                                        AI Engine: {isApiActive ? 'NOMINAL' : 'WAITING FOR REDEPLOY'}
+                                        AI Engine: {isApiActive ? 'NOMINAL' : 'WAITING FOR SYNC'}
                                     </h4>
                                     {isApiActive ? (
                                         <p className="text-sm text-emerald-700 mt-1 italic font-medium">Connection established. The Author's voice is loaded.</p>
@@ -212,7 +222,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                                                     <span className="text-[10px] font-black text-white uppercase tracking-widest">Action Item</span>
                                                 </div>
                                                 <p className="text-sm text-navy-100 leading-relaxed">
-                                                    You've added your API Key. Now, go to your **Vercel Deployments**, click the **Redeploy** button, and this screen will transform into your marketing engine.
+                                                    If you've added your API Key, please trigger a **Redeploy** in Vercel to activate the intelligence core.
                                                 </p>
                                             </div>
                                         </div>
@@ -227,9 +237,9 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                                     <Trophy className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <h4 className="font-black text-xl tracking-tight">Market Ready</h4>
+                                    <h4 className="font-black text-xl tracking-tight uppercase">Ready to Dominate</h4>
                                     <p className={`text-sm mt-1 font-medium ${isApiActive ? 'text-navy-100' : 'text-gray-400'}`}>
-                                        {isApiActive ? 'Strategy modules unlocked. Your financial revolution is live.' : 'Awaiting system initialization...'}
+                                        {isApiActive ? 'Strategy modules unlocked. Your financial revolution is ready for the world.' : 'Awaiting system initialization...'}
                                     </p>
                                 </div>
                             </div>
