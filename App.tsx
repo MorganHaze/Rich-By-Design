@@ -8,7 +8,7 @@ const initialBook: BookDetails = {
   title: "RICH BY DESIGN",
   subtitle: "Money Made Easy",
   author: "Morgan Haze",
-  description: "This book is about creating wealth through intentional design and strategic action. It's a roadmap built on stories, systems, setbacks, and comebacks. You'll stop surviving and start designing. Because the truth is: nobody gets rich by accident. They get rich from their decisions.",
+  description: "Stop leaving your financial future to chance. This book is a masterclass in architecting wealth through intentional design and strategic systems. It is a roadmap built on high-stakes stories and actionable laws. You will stop surviving and start designing, because nobody gets rich by accident—they get rich by design.",
   targetAudience: "Individuals who feel 'behind' financially and are looking for a structural system to build lasting, holistic wealth.",
   keyTakeaways: [
     "Law 1. Invest at least one-tenth of all you earn. Pay yourself first, always.",
