@@ -6,8 +6,7 @@ import {
   TrendingUp, 
   Send, 
   ExternalLink, 
-  ArrowRight,
-  ChevronRight
+  ArrowRight
 } from 'lucide-react';
 
 interface LandingPageProps {
@@ -52,7 +51,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // ASIN from Amazon for your book
+  // Official Amazon Image URL for B0FN334YXZ
   const asin = "B0FN334YXZ";
   const coverImageUrl = `https://m.media-amazon.com/images/P/${asin}.01.20.LZZZZZZZ.jpg`;
 
@@ -102,7 +101,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
                 </span>
               </h1>
               <p className="text-xl text-gray-500 max-w-2xl leading-relaxed mb-10 font-medium">
-                You weren't meant to survive — you were meant to build. {book.description.split('.')[0]}.
+                {book.description.split('.')[0]}. {book.description.split('.')[1]}.
               </p>
               <div className="flex flex-col sm:flex-row gap-5">
                 <Button onClick={handleBuyClick} className="px-10 h-16 text-sm font-black uppercase tracking-widest bg-navy-900 hover:bg-navy-950 shadow-2xl shadow-navy-900/20 rounded-2xl">
@@ -115,14 +114,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
             </div>
             
             <div className="mt-20 lg:mt-0 lg:col-span-5 flex justify-center lg:justify-end perspective-1000">
-              <div className="relative group transition-all duration-700 hover:scale-105" style={{ transform: 'rotateY(-20deg) rotateX(5deg)' }}>
+              <div className="relative group transition-all duration-700 hover:scale-105" style={{ transform: 'rotateY(-22deg) rotateX(4deg)' }}>
                 {/* Book Glow */}
                 <div className="absolute -inset-10 bg-gold-400/10 blur-[100px] rounded-full opacity-50 group-hover:opacity-80 transition-opacity"></div>
                 
                 {/* 3D Book Container */}
-                <div className="relative w-72 h-[450px] shadow-[25px_35px_80px_rgba(0,0,0,0.5)] rounded-r-lg flex overflow-hidden">
+                <div className="relative w-72 h-[450px] shadow-[25px_35px_80px_rgba(0,0,0,0.5)] rounded-r-lg flex overflow-hidden border-r-2 border-white/10">
                   {/* Spine Effect */}
-                  <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-black/40 via-transparent to-white/10 z-20"></div>
+                  <div className="absolute left-0 top-0 bottom-0 w-3.5 bg-gradient-to-r from-black/40 via-transparent to-white/10 z-20"></div>
                   
                   {/* Actual Amazon Cover */}
                   <img 
@@ -130,8 +129,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
                     alt="Rich By Design Book Cover" 
                     className="w-full h-full object-cover z-10"
                     onError={(e) => {
-                       // Fallback UI if image fails
-                       (e.target as any).style.display = 'none';
+                       (e.target as any).src = 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=720';
                     }}
                   />
                   
