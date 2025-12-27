@@ -1,4 +1,5 @@
-import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
+
+import { GoogleGenAI } from "@google/genai";
 import { BookDetails, MarketingContentType } from '../types';
 
 export const generateMarketingContent = async (
@@ -6,27 +7,28 @@ export const generateMarketingContent = async (
   type: MarketingContentType,
   tone: string = 'Inspirational & Authoritative'
 ): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  // Always initialize GoogleGenAI with { apiKey: process.env.API_KEY } directly as per guidelines
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
   
-  let prompt = "";
+  let strategicTask = "";
   switch (type) {
     case MarketingContentType.SOCIAL_POST:
-      prompt = `Create 3 distinct social media posts (one for LinkedIn, one for Instagram, one for Twitter). 
+      strategicTask = `Create 3 distinct social media posts (one for LinkedIn, one for Instagram, one for Twitter). 
       - LinkedIn: Long-form, professional, focus on "structural wealth."
       - Instagram: Short, punchy, visual hook, focus on "70-10-10-10 rule."
       - Twitter: A thread-starter hook about why people are "fighting a losing battle with money."`;
       break;
     case MarketingContentType.EMAIL_NEWSLETTER:
-      prompt = `Draft a high-conversion sales email. 
+      strategicTask = `Draft a high-conversion sales email. 
       - Subject: Something that breaks the pattern of typical finance emails.
       - Body: Start with the problem of "trading time for money," introduce the book as the architectural solution, and end with a strong CTA.`;
       break;
     case MarketingContentType.BLOG_OUTLINE:
-      prompt = `Generate a comprehensive blog post outline titled "Why You Aren't Rich (Yet): The Missing Architecture of Wealth." 
+      strategicTask = `Generate a comprehensive blog post outline titled "Why You Aren't Rich (Yet): The Missing Architecture of Wealth." 
       Include 5 main points, sub-points, and a concluding thought that leads to the book "Rich by Design."`;
       break;
     case MarketingContentType.AD_COPY:
-      prompt = `Write 3 versions of Facebook Ad copy. 
+      strategicTask = `Write 3 versions of Facebook Ad copy. 
       - Version 1: Benefit-driven (The "How-to").
       - Version 2: Fear of Missing Out (The "Behind" angle).
       - Version 3: Visionary (The "Legacy" angle).`;
@@ -41,7 +43,7 @@ export const generateMarketingContent = async (
     BOOK DESCRIPTION: ${book.description}
     TARGET AUDIENCE: ${book.targetAudience}
     
-    STRATEGIC TASK: ${prompt}
+    STRATEGIC TASK: ${strategicTask}
     
     RULES:
     1. Use high-impact, evocative language.
@@ -51,23 +53,25 @@ export const generateMarketingContent = async (
   `;
 
   try {
-    const response: GenerateContentResponse = await ai.models.generateContent({
+    const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: fullPrompt,
     });
+    // Correctly accessing the .text property as per guidelines
     return response.text || "Failed to generate content.";
   } catch (error) {
     console.error("Gemini API Error:", error);
-    return "The system is currently syncing. Please check your API_KEY configuration.";
+    return "The system is currently syncing. If this persists, verify your API_KEY is set in your environment variables.";
   }
 };
 
 export const chatWithBook = async (
   book: BookDetails,
   userQuestion: string,
-  history: { role: string; parts: { text: string }[] }[]
+  history: { role: 'user' | 'model'; parts: { text: string }[] }[]
 ): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  // Always initialize GoogleGenAI with { apiKey: process.env.API_KEY } directly as per guidelines
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
 
   const systemInstruction = `
     You are the voice of the financial philosophy "Rich By Design" by Morgan Haze.
@@ -84,18 +88,21 @@ export const chatWithBook = async (
   `;
 
   try {
-    const chat = ai.chats.create({
+    // Constructing the full message content array for the model
+    const contents = [...history, { role: 'user', parts: [{ text: userQuestion }] }];
+
+    const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
+      contents: contents as any,
       config: {
         systemInstruction: systemInstruction,
       },
-      history: history
     });
 
-    const result = await chat.sendMessage({ message: userQuestion });
-    return result.text || "Pondering the architecture of that question...";
+    // Correctly accessing the .text property as per guidelines
+    return response.text || "Pondering the architecture of that question...";
   } catch (error) {
     console.error("Gemini Chat Error:", error);
-    return "Frequency interrupted. Visit richbydesignhq.com for the full manual.";
+    return "Frequency interrupted. The wealth engine is currently resetting.";
   }
 };
