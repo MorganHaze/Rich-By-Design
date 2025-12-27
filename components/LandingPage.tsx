@@ -101,7 +101,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
                 </span>
               </h1>
               <p className="text-xl text-gray-500 max-w-2xl leading-relaxed mb-10 font-medium">
-                {book.description.split('.')[0]}. {book.description.split('.')[1]}.
+                {book.description}
               </p>
               <div className="flex flex-col sm:flex-row gap-5">
                 <Button onClick={handleBuyClick} className="px-10 h-16 text-sm font-black uppercase tracking-widest bg-navy-900 hover:bg-navy-950 shadow-2xl shadow-navy-900/20 rounded-2xl">
