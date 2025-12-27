@@ -180,19 +180,19 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                         </div>
 
                         <div className="space-y-6 max-w-2xl">
-                            {/* NEW: Domain Routing Help Box */}
+                            {/* Domain Routing Help Box */}
                             <div className="flex items-start gap-6 p-8 bg-amber-50 rounded-3xl border border-amber-200 shadow-sm">
                                 <div className="bg-amber-500 text-white rounded-2xl p-2.5 shadow-lg shadow-amber-200">
                                     <Globe className="w-6 h-6" />
                                 </div>
-                                <div>
+                                <div className="flex-1">
                                     <h4 className="font-black text-amber-900 text-xl tracking-tight uppercase">Domain Health Check</h4>
                                     <p className="text-sm text-amber-800 mt-2 font-medium leading-relaxed">
-                                        You mentioned <strong>richbydesignhq.com</strong> is showing the old site. This is likely due to DNS propagation.
+                                        If <strong>richbydesignhq.com</strong> is showing the old site while <strong>www</strong> works (or vice-versa), this is a DNS routing issue.
                                         <br/><br/>
-                                        <strong>1. Fixing the Root:</strong> Ensure your domain A record points to the Vercel IP.
+                                        <strong>1. Fixing the Root:</strong> Ensure your domain A record points to Vercel's IP (76.76.21.21).
                                         <br/>
-                                        <strong>2. Fixing "www":</strong> Add a CNAME record in your registrar (GoDaddy/Namecheap) pointing <code className="bg-amber-100 px-1">www</code> to <code className="bg-amber-100 px-1">cname.vercel-dns.com</code>.
+                                        <strong>2. Fixing "www":</strong> Add a CNAME record in your registrar pointing <code className="bg-amber-100 px-1">www</code> to <code className="bg-amber-100 px-1">cname.vercel-dns.com</code>.
                                     </p>
                                     <div className="mt-4 flex gap-4">
                                         <button onClick={() => window.open('https://vercel.com/dashboard', '_blank')} className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1 text-navy-900 bg-white px-3 py-1.5 rounded-lg border border-amber-300 shadow-sm">
