@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { LandingPage } from './components/LandingPage';
 import { MarketingDashboard } from './components/MarketingDashboard';
 import { BookDetails } from './types';
@@ -34,8 +34,9 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="relative selection:bg-gold-200 selection:text-navy-900 bg-white min-h-screen">
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-4 items-end">
+    <div className="relative selection:bg-gold-200 selection:text-navy-900 bg-white min-h-screen overflow-x-hidden">
+      {/* Dynamic Navigation Overlay */}
+      <div className="fixed bottom-6 right-6 z-[100] flex flex-col gap-4 items-end">
         {!isAdminMode && (
           <button
             onClick={handleShare}
@@ -65,9 +66,10 @@ const App: React.FC = () => {
         </button>
       </div>
 
+      {/* Sync Status Badge */}
       <div className="fixed bottom-6 left-6 z-[60] bg-white/90 backdrop-blur-md border border-gray-100 px-4 py-2 rounded-xl flex items-center gap-3 shadow-lg pointer-events-none">
         <Activity className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
-        <span className="text-[9px] font-black text-navy-900 uppercase tracking-widest">v1.8.0 SYNCED</span>
+        <span className="text-[9px] font-black text-navy-900 uppercase tracking-widest">v2.0.0 SYNCED</span>
       </div>
 
       <main>
