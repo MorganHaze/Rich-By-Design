@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { BookDetails, ChatMessage } from '../types';
 import { chatWithBook } from '../services/geminiService';
@@ -29,8 +30,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
     setChatHistory(prev => [...prev, { role: 'user', text: userMsg }]);
     setIsChatLoading(true);
 
-    const apiHistory = chatHistory.map(msg => ({
-      role: msg.role === 'user' ? 'user' : 'model',
+    // Fix: Explicitly type apiHistory to satisfy the 'user' | 'model' union type requirement
+    const apiHistory: { role: 'user' | 'model'; parts: { text: string }[] }[] = chatHistory.map(msg => ({
+      role: msg.role,
       parts: [{ text: msg.text }]
     }));
 
