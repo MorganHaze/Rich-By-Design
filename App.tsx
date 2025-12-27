@@ -1,4 +1,4 @@
-import React, { useState, Suspense } from 'react';
+import React, { useState } from 'react';
 import { LandingPage } from './components/LandingPage';
 import { MarketingDashboard } from './components/MarketingDashboard';
 import { BookDetails } from './types';
@@ -73,13 +73,11 @@ const App: React.FC = () => {
       </div>
 
       <main>
-        <Suspense fallback={<div className="flex items-center justify-center h-screen text-navy-900 font-black">INITIALIZING ARCHITECTURE...</div>}>
-          {isAdminMode ? (
-            <MarketingDashboard book={book} />
-          ) : (
-            <LandingPage book={book} />
-          )}
-        </Suspense>
+        {isAdminMode ? (
+          <MarketingDashboard book={book} />
+        ) : (
+          <LandingPage book={book} />
+        )}
       </main>
     </div>
   );
