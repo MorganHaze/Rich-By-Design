@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { LandingPage } from './components/LandingPage';
-import { MarketingDashboard } from '././components/MarketingDashboard';
+import { MarketingDashboard } from './components/MarketingDashboard';
 import { BookDetails } from './types';
 import { Settings, Eye, Share2, Activity } from 'lucide-react';
 
