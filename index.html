@@ -4,10 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rich By Design HQ | Financial Architecture</title>
-    
     <meta name="description" content="Official HQ for Rich By Design. Stop surviving and start designing your financial future." />
     <meta property="og:title" content="Rich By Design HQ" />
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -21,7 +19,6 @@
         }
       }
     </script>
-    
     <style type="text/css">
       body { background-color: #102a43; margin: 0; padding: 0; font-family: 'Inter', sans-serif; overflow-x: hidden; }
       #root:empty {
@@ -47,11 +44,23 @@
       }
       .perspective-1000 { perspective: 1000px; }
     </style>
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
-  </head>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "vite": "https://esm.sh/vite@^7.3.0",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
+  }
+}
+</script>
+</head>
   <body class="bg-navy-900 text-white antialiased">
     <div id="root"></div>
-    <script type="module" src="./index.tsx"></script>
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>
