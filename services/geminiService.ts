@@ -11,43 +11,27 @@ export const generateMarketingContent = async (
   let strategicTask = "";
   switch (type) {
     case MarketingContentType.SOCIAL_POST:
-      strategicTask = `Create 3 distinct social media posts (one for LinkedIn, one for Instagram, one for Twitter). 
-      - LinkedIn: Long-form, professional, focus on "structural wealth."
-      - Instagram: Short, punchy, visual hook, focus on "70-10-10-10 rule."
-      - Twitter: A thread-starter hook about why people are "fighting a losing battle with money."`;
+      strategicTask = `Create 3 distinct social media posts (LinkedIn, Instagram, Twitter). Focus on the "Wealth Architecture" concept.`;
       break;
     case MarketingContentType.EMAIL_NEWSLETTER:
-      strategicTask = `Draft a high-conversion sales email for "${book.title}". 
-      - Subject: Something that breaks the pattern of typical finance emails.
-      - Body: Start with the problem of "trading time for money," introduce the book as the architectural solution, and end with a strong CTA.`;
+      strategicTask = `Draft a high-conversion sales email for "${book.title}". Focus on the pain of financial stagnation vs the power of design.`;
       break;
     case MarketingContentType.BLOG_OUTLINE:
-      strategicTask = `Generate a comprehensive blog post outline titled "Why You Aren't Rich (Yet): The Missing Architecture of Wealth." 
-      Include 5 main points, sub-points, and a concluding thought that leads to the book "Rich by Design."`;
+      strategicTask = `Generate a comprehensive blog post outline titled "Why You Aren't Rich (Yet): The Missing Architecture of Wealth."`;
       break;
     case MarketingContentType.AD_COPY:
-      strategicTask = `Write 3 versions of Facebook Ad copy. 
-      - Version 1: Benefit-driven (The "How-to").
-      - Version 2: Fear of Missing Out (The "Behind" angle).
-      - Version 3: Visionary (The "Legacy" angle).`;
+      strategicTask = `Write 3 versions of Facebook Ad copy focusing on benefit-driven hooks.`;
       break;
   }
 
   const fullPrompt = `
-    You are a luxury brand marketing strategist and financial expert. 
-    You are writing for the book "${book.title}" by ${book.author}.
-    
+    You are a luxury brand marketing strategist. 
+    Write content for "${book.title}" by ${book.author}.
     TONE: ${tone}
     BOOK DESCRIPTION: ${book.description}
-    TARGET AUDIENCE: ${book.targetAudience}
+    TASK: ${strategicTask}
     
-    STRATEGIC TASK: ${strategicTask}
-    
-    RULES:
-    1. Use high-impact, evocative language.
-    2. Reference specific laws or concepts from the book.
-    3. Ensure the writing sounds like it comes from a place of deep wisdom.
-    4. Format with clean Markdown.
+    Format with clean Markdown and use high-impact language.
   `;
 
   try {
@@ -58,7 +42,7 @@ export const generateMarketingContent = async (
     return response.text || "Failed to generate content.";
   } catch (error) {
     console.error("Gemini API Error:", error);
-    return "Generation unavailable. Check your connection.";
+    return "The marketing engine is currently offline. Please check your API configuration.";
   }
 };
 
@@ -70,13 +54,10 @@ export const chatWithBook = async (
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   const systemInstruction = `
-    You are the voice of the financial philosophy "Rich By Design" by Morgan Haze.
-    Your tone is wise, architectural, encouraging, and authoritative.
-    
-    CORE PRINCIPLES:
-    - Wealth is a design, not an accident.
-    - The 70-10-10-10 rule is the foundation.
-    - Holistic wealth includes Physical, Emotional, Spiritual, Social, and Financial.
+    You are the voice of "Rich By Design" by Morgan Haze.
+    Tone: Wise, authoritative, and encouraging.
+    Context: The user is asking about financial freedom and wealth building based on the book's 7 laws.
+    Always encourage intentional design over luck.
   `;
 
   try {
@@ -88,9 +69,9 @@ export const chatWithBook = async (
         systemInstruction: systemInstruction,
       },
     });
-    return response.text || "I am reflecting on your design. Please rephrase.";
+    return response.text || "I am reflecting on your query. Please rephrase it.";
   } catch (error) {
     console.error("Gemini Chat Error:", error);
-    return "The architectural signal is weak. Try again.";
+    return "Connecting to the wealth vault... please try again in a moment.";
   }
 };
