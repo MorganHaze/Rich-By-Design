@@ -4,8 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rich By Design HQ | Financial Architecture</title>
-    <meta name="description" content="Official HQ for Rich By Design. Stop surviving and start designing your financial future." />
-    <meta property="og:title" content="Rich By Design HQ" />
+    <meta name="description" content="Stop surviving. Start designing your financial future." />
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -13,35 +12,31 @@
           extend: {
             colors: {
               navy: { 900: '#102a43', 950: '#0b1d2e' },
-              gold: { 400: '#fbbf24', 500: '#f59e0b' }
+              gold: { 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706' }
             }
           }
         }
       }
     </script>
     <style type="text/css">
-      body { background-color: #102a43; margin: 0; padding: 0; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+      body { background-color: #102a43; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
       #root:empty {
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
         height: 100vh;
         color: #fbbf24;
-        font-family: serif;
-        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        font-size: 0.8rem;
       }
       #root:empty::after {
-        content: "INITIALIZING WEALTH ENGINE...";
-        font-size: 0.75rem;
-        letter-spacing: 0.3em;
-        text-transform: uppercase;
+        content: "INITIALIZING WEALTH ARCHITECTURE...";
         animation: pulse 2s infinite ease-in-out;
       }
-      @keyframes pulse {
-        0%, 100% { opacity: 0.4; }
-        50% { opacity: 1; }
-      }
+      @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+      .perspective-1000 { perspective: 1000px; }
+      .book-shadow { shadow: 25px 35px 80px rgba(0,0,0,0.5); }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
   <script type="importmap">
@@ -60,6 +55,6 @@
 </head>
   <body class="bg-navy-900 text-white antialiased">
     <div id="root"></div>
-    <script type="module" src="./index.tsx"></script>
+    <script type="module" src="index.tsx"></script>
   </body>
 </html>
