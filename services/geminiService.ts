@@ -58,7 +58,7 @@ export const generateMarketingContent = async (
     return response.text || "Failed to generate content.";
   } catch (error) {
     console.error("Gemini API Error:", error);
-    return "The system is currently syncing. Please try again in a moment.";
+    return "Generation unavailable. Check your connection.";
   }
 };
 
@@ -88,9 +88,9 @@ export const chatWithBook = async (
         systemInstruction: systemInstruction,
       },
     });
-    return response.text || "Pondering the architecture of that question...";
+    return response.text || "I am reflecting on your design. Please rephrase.";
   } catch (error) {
     console.error("Gemini Chat Error:", error);
-    return "Frequency interrupted. The wealth engine is currently resetting.";
+    return "The architectural signal is weak. Try again.";
   }
 };
