@@ -56,7 +56,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
         const content = await generateMarketingContent(book, activeTab as MarketingContentType, tone);
         setGeneratedContent(content);
     } catch (err) {
-        setGeneratedContent("Error: The AI brain hasn't been activated yet. Please ensure the Vercel redeploy has finished.");
+        setGeneratedContent("Error generating content. Please check your network connection.");
     }
     setIsLoading(false);
   };
@@ -84,7 +84,6 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
   return (
     <div className="min-h-screen bg-[#F8FAFC] p-4 md:p-12 selection:bg-gold-100">
       <div className="max-w-6xl mx-auto">
-        {/* Header Area */}
         <div className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
                 <div className="flex items-center gap-2 mb-2">
@@ -112,7 +111,6 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Sidebar Navigation */}
           <div className="space-y-3">
             {tabs.map((tab) => {
                 const Icon = tab.icon;
@@ -164,13 +162,11 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
             )}
           </div>
 
-          {/* Main Content Area */}
           <div className="lg:col-span-3 space-y-6">
             {activeTab === 'STRATEGY' ? (
-              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+              <div className="space-y-6">
                 <div className="bg-white rounded-[2.5rem] shadow-xl border border-gray-100 p-8 md:p-16 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-gold-100/30 rounded-full -mr-48 -mt-48 blur-3xl"></div>
-                    
                     <div className="relative z-10">
                         <div className="mb-8">
                             <h2 className="text-4xl font-black text-navy-900 mb-3 font-serif uppercase tracking-tighter">
@@ -180,7 +176,6 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                         </div>
 
                         <div className="space-y-6 max-w-2xl">
-                            {/* Domain Routing Help Box */}
                             <div className="flex items-start gap-6 p-8 bg-amber-50 rounded-3xl border border-amber-200 shadow-sm">
                                 <div className="bg-amber-500 text-white rounded-2xl p-2.5 shadow-lg shadow-amber-200">
                                     <Globe className="w-6 h-6" />
@@ -188,58 +183,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                                 <div className="flex-1">
                                     <h4 className="font-black text-amber-900 text-xl tracking-tight uppercase">Domain Health Check</h4>
                                     <p className="text-sm text-amber-800 mt-2 font-medium leading-relaxed">
-                                        If <strong>richbydesignhq.com</strong> is showing the old site while <strong>www</strong> works (or vice-versa), this is a DNS routing issue.
-                                        <br/><br/>
-                                        <strong>1. Fixing the Root:</strong> Ensure your domain A record points to Vercel's IP (76.76.21.21).
-                                        <br/>
-                                        <strong>2. Fixing "www":</strong> Add a CNAME record in your registrar pointing <code className="bg-amber-100 px-1">www</code> to <code className="bg-amber-100 px-1">cname.vercel-dns.com</code>.
-                                    </p>
-                                    <div className="mt-4 flex gap-4">
-                                        <button onClick={() => window.open('https://vercel.com/dashboard', '_blank')} className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1 text-navy-900 bg-white px-3 py-1.5 rounded-lg border border-amber-300 shadow-sm">
-                                            Vercel Domains Panel <ExternalLink className="w-3 h-3" />
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className={`flex items-start gap-6 p-8 rounded-3xl border transition-all duration-700 ${
-                                isApiActive ? 'bg-emerald-50/40 border-emerald-100' : 'bg-white border-gold-400 shadow-[0_20px_50px_rgba(251,191,36,0.15)] scale-[1.02]'
-                            }`}>
-                                <div className={`${isApiActive ? 'bg-emerald-500' : 'bg-gold-500'} text-white rounded-2xl p-2.5 shadow-lg transition-all duration-700`}>
-                                    {isApiActive ? <CheckCircle2 className="w-6 h-6" /> : <RefreshCcw className="w-6 h-6 animate-spin" />}
-                                </div>
-                                <div className="flex-1">
-                                    <h4 className={`font-black text-xl tracking-tight ${isApiActive ? 'text-emerald-900' : 'text-navy-900'}`}>
-                                        AI Engine: {isApiActive ? 'NOMINAL' : 'WAITING FOR SYNC'}
-                                    </h4>
-                                    {isApiActive ? (
-                                        <p className="text-sm text-emerald-700 mt-1 italic font-medium">Connection established. The Author's voice is loaded.</p>
-                                    ) : (
-                                        <div className="mt-5 space-y-4">
-                                            <div className="bg-navy-950 p-6 rounded-2xl border border-navy-800 shadow-inner">
-                                                <div className="flex items-center gap-2 mb-3">
-                                                    <AlertCircle className="w-4 h-4 text-gold-400" />
-                                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">Action Item</span>
-                                                </div>
-                                                <p className="text-sm text-navy-100 leading-relaxed">
-                                                    If you've added your API Key, please trigger a **Redeploy** in Vercel to activate the intelligence core.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className={`flex items-start gap-6 p-8 rounded-3xl border transition-all duration-1000 ${
-                                isApiActive ? 'bg-navy-900 text-white shadow-2xl scale-[1.05]' : 'bg-gray-50 border-gray-100 opacity-40'
-                            }`}>
-                                <div className={`${isApiActive ? 'bg-gold-500 shadow-[0_0_15px_rgba(251,191,36,0.4)]' : 'bg-gray-300'} text-navy-900 rounded-2xl p-2.5`}>
-                                    <Trophy className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h4 className="font-black text-xl tracking-tight uppercase">Ready to Dominate</h4>
-                                    <p className={`text-sm mt-1 font-medium ${isApiActive ? 'text-navy-100' : 'text-gray-400'}`}>
-                                        {isApiActive ? 'Strategy modules unlocked. Your financial revolution is ready for the world.' : 'Awaiting system initialization...'}
+                                        If <strong>richbydesignhq.com</strong> is showing the old site while <strong>www</strong> works, check your DNS routing.
                                     </p>
                                 </div>
                             </div>
@@ -248,7 +192,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                 </div>
               </div>
             ) : (
-              <div className="space-y-6 animate-in fade-in slide-in-from-right-8 duration-700">
+              <div className="space-y-6">
                 <div className="bg-white rounded-[2.5rem] shadow-xl border border-gray-100 p-8 md:p-12">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                         <div>
@@ -257,13 +201,9 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                                 {tabs.find(t => t.id === activeTab)?.label}
                             </h2>
                         </div>
-                        <Button 
-                            onClick={handleGenerate} 
-                            isLoading={isLoading} 
-                            className="bg-navy-900 hover:bg-navy-950 px-10 py-7 h-auto text-sm font-black uppercase tracking-widest rounded-2xl shadow-xl hover:shadow-2xl transition-all group"
-                        >
-                            {generatedContent ? 'Refine Logic' : 'Execute Generation'}
-                            <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        <Button onClick={handleGenerate} isLoading={isLoading} className="bg-navy-900 hover:bg-navy-950 px-10 py-7 h-auto text-sm font-black uppercase tracking-widest rounded-2xl shadow-xl">
+                            Execute Generation
+                            <ArrowRight className="ml-3 w-5 h-5" />
                         </Button>
                     </div>
 
@@ -274,57 +214,18 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                                     {generatedContent}
                                 </div>
                                 <div className="absolute top-4 right-4">
-                                    <button 
-                                        onClick={copyToClipboard}
-                                        className="p-4 bg-white rounded-2xl shadow-lg border border-gray-100 text-navy-900 hover:bg-navy-900 hover:text-white transition-all transform active:scale-95"
-                                        title="Copy to clipboard"
-                                    >
+                                    <button onClick={copyToClipboard} className="p-4 bg-white rounded-2xl shadow-lg border border-gray-100 text-navy-900 hover:bg-navy-900 hover:text-white transition-all">
                                         <Copy className="w-5 h-5" />
                                     </button>
                                 </div>
                             </div>
-                            
-                            {/* Visual Preview for Social Posts */}
-                            {activeTab === MarketingContentType.SOCIAL_POST && (
-                                <div className="xl:col-span-2 space-y-4">
-                                    <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Live Preview</span>
-                                    <div className="bg-white border border-gray-200 rounded-[2rem] overflow-hidden shadow-sm">
-                                        <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-8 h-8 rounded-full bg-navy-900 flex items-center justify-center">
-                                                    <span className="text-[8px] text-gold-400 font-black">MH</span>
-                                                </div>
-                                                <span className="text-xs font-bold text-navy-900 tracking-tight">Morgan Haze</span>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <Linkedin className="w-3 h-3 text-gray-400" />
-                                                <Instagram className="w-3 h-3 text-gray-400" />
-                                                <Twitter className="w-3 h-3 text-gray-400" />
-                                            </div>
-                                        </div>
-                                        <div className="aspect-square bg-navy-900 flex flex-col items-center justify-center p-8 text-center relative">
-                                            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
-                                            <h3 className="text-white font-serif text-3xl font-black leading-tight uppercase mb-2">Rich By Design</h3>
-                                            <div className="h-0.5 w-12 bg-gold-400 mb-4"></div>
-                                            <p className="text-gold-400 text-xs font-black tracking-widest uppercase">The 7 Laws of Money</p>
-                                        </div>
-                                        <div className="p-4">
-                                            <div className="h-2 w-24 bg-gray-100 rounded mb-2"></div>
-                                            <div className="h-2 w-full bg-gray-50 rounded mb-2"></div>
-                                            <div className="h-2 w-2/3 bg-gray-50 rounded"></div>
-                                        </div>
-                                    </div>
-                                    <p className="text-[10px] text-gray-400 italic text-center">Simulated visual for Instagram/LinkedIn</p>
-                                </div>
-                            )}
                         </div>
                     ) : (
-                    <div className="bg-gray-50/50 rounded-[3rem] p-24 text-center border-2 border-dashed border-gray-200 transition-all hover:border-gold-300 group">
-                        <div className="mx-auto h-24 w-24 bg-white rounded-[2rem] shadow-sm flex items-center justify-center text-gold-500 mb-8 transition-transform group-hover:scale-110 duration-500">
+                    <div className="bg-gray-50/50 rounded-[3rem] p-24 text-center border-2 border-dashed border-gray-200">
+                        <div className="mx-auto h-24 w-24 bg-white rounded-[2rem] shadow-sm flex items-center justify-center text-gold-500 mb-8">
                             <PenTool className="w-10 h-10" />
                         </div>
                         <h3 className="text-2xl font-black text-navy-900 mb-3 font-serif uppercase tracking-tight">Ready for Input</h3>
-                        <p className="text-gray-500 max-w-sm mx-auto leading-relaxed">Choose your tone and click generate to deploy high-impact assets for the Rich By Design brand.</p>
                     </div>
                     )}
                 </div>
