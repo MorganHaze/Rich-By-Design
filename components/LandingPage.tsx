@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { BookDetails, ChatMessage } from '../types';
 import { chatWithBook } from '../services/geminiService';
@@ -30,7 +29,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
     setChatHistory(prev => [...prev, { role: 'user', text: userMsg }]);
     setIsChatLoading(true);
 
-    // Fix: Explicitly type apiHistory to satisfy the 'user' | 'model' union type requirement
     const apiHistory: { role: 'user' | 'model'; parts: { text: string }[] }[] = chatHistory.map(msg => ({
       role: msg.role,
       parts: [{ text: msg.text }]
@@ -53,13 +51,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Official Amazon Image URL for B0FN334YXZ
   const asin = "B0FN334YXZ";
   const coverImageUrl = `https://m.media-amazon.com/images/P/${asin}.01.20.LZZZZZZZ.jpg`;
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900 selection:bg-gold-200">
-      {/* Premium Navigation */}
       <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="flex justify-between h-20 items-center">
@@ -83,7 +79,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
         </div>
       </nav>
 
-      {/* Hero Section */}
       <section className="pt-44 pb-24 relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full opacity-5 pointer-events-none">
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
@@ -117,15 +112,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
             
             <div className="mt-20 lg:mt-0 lg:col-span-5 flex justify-center lg:justify-end perspective-1000">
               <div className="relative group transition-all duration-700 hover:scale-105" style={{ transform: 'rotateY(-22deg) rotateX(4deg)' }}>
-                {/* Book Glow */}
                 <div className="absolute -inset-10 bg-gold-400/10 blur-[100px] rounded-full opacity-50 group-hover:opacity-80 transition-opacity"></div>
-                
-                {/* 3D Book Container */}
                 <div className="relative w-72 h-[450px] shadow-[25px_35px_80px_rgba(0,0,0,0.5)] rounded-r-lg flex overflow-hidden border-r-2 border-white/10">
-                  {/* Spine Effect */}
                   <div className="absolute left-0 top-0 bottom-0 w-3.5 bg-gradient-to-r from-black/40 via-transparent to-white/10 z-20"></div>
-                  
-                  {/* Actual Amazon Cover */}
                   <img 
                     src={coverImageUrl} 
                     alt="Rich By Design Book Cover" 
@@ -134,12 +123,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
                        (e.target as any).src = 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=720';
                     }}
                   />
-                  
-                  {/* Premium Glossy Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 pointer-events-none z-30"></div>
                 </div>
-
-                {/* Status Badge */}
                 <div className="absolute -bottom-6 -right-6 bg-gold-500 text-navy-900 px-6 py-4 rounded-2xl shadow-2xl font-black text-xs uppercase tracking-widest transform -rotate-12 border-4 border-white z-40">
                   Best Seller
                 </div>
@@ -149,14 +134,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
         </div>
       </section>
 
-      {/* Philosophy Section */}
       <section id="book-section" className="py-32 bg-gray-50 relative">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center mb-20">
             <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-gold-600 mb-4">The Blueprint</h2>
             <h3 className="text-4xl lg:text-5xl font-black text-navy-900 font-serif uppercase tracking-tight">The Seven Laws of Money</h3>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {book.keyTakeaways.map((law, idx) => (
               <div key={idx} className="bg-white p-10 rounded-[2.5rem] border border-gray-100 hover:border-gold-300 transition-all hover:shadow-2xl hover:-translate-y-2 group">
@@ -171,7 +154,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
         </div>
       </section>
 
-      {/* AI Mentor */}
       <section id="ai-preview" className="py-32 bg-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="flex flex-col lg:flex-row items-center gap-20">
@@ -195,7 +177,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
               <div className="bg-navy-950 rounded-[3rem] shadow-[0_40px_100px_rgba(16,42,67,0.2)] overflow-hidden border border-white/5">
                 <div className="h-[450px] p-8 overflow-y-auto flex flex-col space-y-6 bg-gradient-to-b from-navy-900 to-navy-950 scrollbar-hide">
                   {chatHistory.map((msg, idx) => (
-                    <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2`}>
+                    <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                       <div className={`max-w-[85%] rounded-3xl px-6 py-4 text-sm font-medium leading-relaxed ${
                         msg.role === 'user' 
                           ? 'bg-gold-500 text-navy-900 rounded-br-none shadow-xl' 
@@ -237,7 +219,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
         </div>
       </section>
 
-      {/* Final CTA */}
       <section className="py-32 bg-navy-900 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-navy-900 via-navy-950 to-navy-900 opacity-50"></div>
         <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
@@ -251,7 +232,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-white py-12 border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="text-sm font-black text-navy-900 tracking-tighter uppercase">
