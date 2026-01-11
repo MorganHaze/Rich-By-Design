@@ -6,7 +6,15 @@ import {
   TrendingUp, 
   Send, 
   ExternalLink, 
-  ArrowRight
+  ArrowRight,
+  Download,
+  Calculator,
+  ShieldCheck,
+  Zap,
+  CheckCircle2,
+  FileText,
+  PlayCircle,
+  Lightbulb
 } from 'lucide-react';
 
 interface LandingPageProps {
@@ -19,6 +27,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
     { role: 'model', text: `Hi! I'm the AI mentor for "${book.title}". You're not behind. You're just starting. Ask me anything about building your financial architecture!` }
   ]);
   const [isChatLoading, setIsChatLoading] = useState(false);
+
+  // New states for the Resource Tool
+  const [architectGoal, setArchitectGoal] = useState('');
+  const [architectResult, setArchitectResult] = useState('');
+  const [isArchitectLoading, setIsArchitectLoading] = useState(false);
 
   const handleChatSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,6 +53,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
     setIsChatLoading(false);
   };
 
+  const handleArchitectSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!architectGoal.trim()) return;
+
+    setIsArchitectLoading(true);
+    const response = await chatWithBook(book, `Based on the Seven Laws of Money, design a specific wealth architecture for someone whose goal is: "${architectGoal}". Provide 3 actionable design steps.`, []);
+    setArchitectResult(response);
+    setIsArchitectLoading(false);
+  };
+
   const handleBuyClick = () => {
     if (book.amazonLink) {
       window.open(book.amazonLink, '_blank');
@@ -54,6 +77,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
   const asin = "B0FN334YXZ";
   const coverImageUrl = `https://m.media-amazon.com/images/P/${asin}.01.20.LZZZZZZZ.jpg`;
 
+  const resources = [
+    {
+      title: "The 70-10-10-10 Tracker",
+      description: "A precision spreadsheet template to manage your income according to the Architectural Standard.",
+      icon: Calculator,
+      type: "Downloadable PDF/XLS",
+      color: "bg-blue-50 text-blue-600"
+    },
+    {
+      title: "Wealth Guard Checklist",
+      description: "A 12-point security audit to ensure your current investments are shielded from systemic loss.",
+      icon: ShieldCheck,
+      type: "Interactive Guide",
+      color: "bg-emerald-50 text-emerald-600"
+    },
+    {
+      title: "The Vision Board Blueprint",
+      description: "A structural framework for visualizing your Physical, Emotional, and Financial legacy.",
+      icon: FileText,
+      type: "Template",
+      color: "bg-purple-50 text-purple-600"
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900 selection:bg-gold-200">
       <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
@@ -64,10 +111,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
                 Rich By Design<span className="text-gold-500">HQ</span>
               </button>
               <div className="hidden lg:flex items-center space-x-8">
-                <button className="text-[11px] font-black uppercase tracking-widest text-navy-900 border-b-2 border-gold-500">Home</button>
+                <button onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})} className="text-[11px] font-black uppercase tracking-widest text-gray-500 hover:text-navy-900 transition-colors">Home</button>
                 <button onClick={() => scrollTo('book-section')} className="text-[11px] font-black uppercase tracking-widest text-gray-500 hover:text-navy-900 transition-colors">Book</button>
-                <button className="text-[11px] font-black uppercase tracking-widest text-gray-500 hover:text-navy-900 transition-colors">Resources</button>
-                <button className="text-[11px] font-black uppercase tracking-widest text-gray-500 hover:text-navy-900 transition-colors">Giving Back</button>
+                <button onClick={() => scrollTo('resources-section')} className="text-[11px] font-black uppercase tracking-widest text-navy-900 border-b-2 border-gold-500">Resources</button>
+                <button onClick={() => scrollTo('ai-preview')} className="text-[11px] font-black uppercase tracking-widest text-gray-500 hover:text-navy-900 transition-colors">AI Mentor</button>
               </div>
             </div>
             <div className="flex gap-4">
@@ -79,6 +126,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
         </div>
       </nav>
 
+      {/* Hero Section */}
       <section className="pt-44 pb-24 relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full opacity-5 pointer-events-none">
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
@@ -104,8 +152,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
                 <Button onClick={handleBuyClick} className="px-10 h-16 text-sm font-black uppercase tracking-widest bg-navy-900 hover:bg-navy-950 shadow-2xl shadow-navy-900/20 rounded-2xl">
                   Order on Amazon <ExternalLink className="ml-3 w-4 h-4" />
                 </Button>
-                <Button onClick={() => scrollTo('ai-preview')} variant="outline" className="px-10 h-16 text-sm font-black uppercase tracking-widest border-2 border-gray-200 text-navy-900 hover:bg-gray-50 rounded-2xl">
-                  Consult the AI
+                <Button onClick={() => scrollTo('resources-section')} variant="outline" className="px-10 h-16 text-sm font-black uppercase tracking-widest border-2 border-gray-200 text-navy-900 hover:bg-gray-50 rounded-2xl">
+                  Get Free Resources
                 </Button>
               </div>
             </div>
@@ -127,6 +175,121 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
                 </div>
                 <div className="absolute -bottom-6 -right-6 bg-gold-500 text-navy-900 px-6 py-4 rounded-2xl shadow-2xl font-black text-xs uppercase tracking-widest transform -rotate-12 border-4 border-white z-40">
                   Best Seller
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Resources Section */}
+      <section id="resources-section" className="py-32 bg-white relative overflow-hidden">
+        <div className="absolute right-0 top-0 w-1/3 h-full bg-gray-50 -z-10 skew-x-[-10deg] translate-x-20"></div>
+        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+          <div className="flex flex-col lg:flex-row justify-between items-end mb-16 gap-8">
+            <div className="max-w-2xl">
+              <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-gold-600 mb-4">The Toolkit</h2>
+              <h3 className="text-4xl lg:text-5xl font-black text-navy-900 font-serif uppercase tracking-tight leading-none mb-6">
+                Architect Your <br/><span className="text-gold-500 italic lowercase font-sans font-medium">Resources</span>
+              </h3>
+              <p className="text-lg text-gray-500 font-medium">
+                Designing wealth requires the right instruments. Use these proprietary tools to start implementing the Seven Laws today.
+              </p>
+            </div>
+            <div className="hidden lg:block">
+              <div className="flex gap-4">
+                <div className="text-right">
+                  <div className="text-2xl font-black text-navy-900">10k+</div>
+                  <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">Downloads</div>
+                </div>
+                <div className="w-px h-12 bg-gray-200 mx-4"></div>
+                <div className="text-right">
+                  <div className="text-2xl font-black text-navy-900">4.9/5</div>
+                  <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">User Rating</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
+            {resources.map((res, idx) => (
+              <div key={idx} className="group bg-white p-8 rounded-[2rem] border border-gray-100 hover:border-gold-300 transition-all hover:shadow-2xl flex flex-col items-start h-full">
+                <div className={`w-14 h-14 ${res.color} rounded-2xl flex items-center justify-center mb-6 shadow-sm transition-transform group-hover:scale-110 group-hover:rotate-3`}>
+                  <res.icon className="w-6 h-6" />
+                </div>
+                <div className="text-[10px] font-black uppercase tracking-widest text-gold-600 mb-2">{res.type}</div>
+                <h4 className="text-xl font-black text-navy-900 mb-3 uppercase tracking-tight">{res.title}</h4>
+                <p className="text-gray-500 text-sm font-medium leading-relaxed mb-8 flex-grow">
+                  {res.description}
+                </p>
+                <button className="w-full py-4 bg-navy-900 text-white rounded-xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-gold-500 hover:text-navy-900 transition-all group-hover:shadow-lg">
+                  Access Tool <Download className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* Interactive Architect Tool */}
+          <div className="bg-navy-900 rounded-[3.5rem] p-8 md:p-16 relative overflow-hidden shadow-2xl">
+            <div className="absolute top-0 right-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20 pointer-events-none"></div>
+            <div className="absolute -top-24 -left-24 w-96 h-96 bg-gold-400/10 rounded-full blur-[120px]"></div>
+            
+            <div className="relative z-10 lg:flex gap-16 items-center">
+              <div className="lg:w-2/5 mb-12 lg:mb-0">
+                <div className="w-12 h-12 bg-gold-500 text-navy-900 rounded-2xl flex items-center justify-center mb-6 shadow-xl">
+                  <Zap className="w-6 h-6" />
+                </div>
+                <h3 className="text-3xl font-black text-white font-serif uppercase tracking-tight leading-tight mb-6">
+                  Custom Wealth <br/><span className="text-gold-400 italic">Architect</span>
+                </h3>
+                <p className="text-navy-200 font-medium mb-8">
+                  Input your primary financial objective, and the AI will design a structural blueprint based on the book's core laws.
+                </p>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 text-gold-400">
+                    <CheckCircle2 className="w-5 h-5" />
+                    <span className="text-xs font-black uppercase tracking-widest">Instant Personalization</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-gold-400">
+                    <CheckCircle2 className="w-5 h-5" />
+                    <span className="text-xs font-black uppercase tracking-widest">Law-Based Logic</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="lg:w-3/5">
+                <div className="bg-white/5 backdrop-blur-md rounded-[2.5rem] border border-white/10 p-8 shadow-inner">
+                  <form onSubmit={handleArchitectSubmit} className="space-y-6">
+                    <div>
+                      <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-gold-500 mb-3">Your Objective</label>
+                      <input 
+                        type="text" 
+                        value={architectGoal}
+                        onChange={(e) => setArchitectGoal(e.target.value)}
+                        placeholder="e.g., Retire at 45 with $5k/mo passive income..."
+                        className="w-full bg-white/10 border border-white/10 rounded-2xl px-6 py-5 text-white placeholder-white/30 outline-none focus:border-gold-500 transition-colors font-medium"
+                      />
+                    </div>
+                    <Button 
+                      isLoading={isArchitectLoading}
+                      disabled={!architectGoal.trim()}
+                      className="w-full h-16 bg-gold-500 hover:bg-gold-400 text-navy-900 rounded-2xl text-sm font-black uppercase tracking-widest shadow-xl shadow-gold-500/20"
+                    >
+                      Design My Blueprint <ArrowRight className="ml-3 w-4 h-4" />
+                    </Button>
+                  </form>
+
+                  {architectResult && (
+                    <div className="mt-8 p-6 bg-white/5 rounded-2xl border border-white/10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Lightbulb className="w-4 h-4 text-gold-400" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-white">Generated Strategy</span>
+                      </div>
+                      <div className="text-sm text-navy-100 leading-relaxed font-medium whitespace-pre-wrap">
+                        {architectResult}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
