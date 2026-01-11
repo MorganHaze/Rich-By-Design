@@ -13,7 +13,7 @@ const initialBook: BookDetails = {
   keyTakeaways: [
     "Law 1. Invest at least one-tenth of all you earn.",
     "Law 2. Live within your means. Budget your lifestyle.",
-    "Law 3. Make your money multiple. Invest wisely.",
+    "Law 3. Make your money multiply. Invest wisely.",
     "Law 4. Guard your investments from loss.",
     "Law 5. Own your home. Build equity.",
     "Law 6. Ensure a future income for retirement.",
