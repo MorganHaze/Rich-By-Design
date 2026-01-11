@@ -19,7 +19,11 @@ import {
   Printer,
   Copy,
   Sparkles,
-  DownloadCloud
+  DownloadCloud,
+  Heart,
+  Globe,
+  Users,
+  Home as HomeIcon
 } from 'lucide-react';
 
 interface LandingPageProps {
@@ -118,6 +122,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
       icon: FileText,
       type: "AI Generator",
       color: "bg-purple-50 text-purple-600"
+    }
+  ];
+
+  const charities = [
+    {
+      name: "Angel's Hope",
+      desc: "Architecting a better future for animals through community-based rescue and educational programs.",
+      url: "https://www.angelshope.org/",
+      icon: Heart,
+      color: "bg-rose-50 text-rose-600"
+    },
+    {
+      name: "Wounded Warrior Project",
+      desc: "Providing the structural support and resources our nation's veterans need to thrive in civilian life.",
+      url: "https://www.woundedwarriorproject.org/",
+      icon: Users,
+      color: "bg-navy-50 text-navy-700"
+    },
+    {
+      name: "Habitat for Humanity",
+      desc: "Building literal foundations for families, because everyone deserves a safe place to call home.",
+      url: "https://www.habitat.org/",
+      icon: HomeIcon,
+      color: "bg-emerald-50 text-emerald-700"
     }
   ];
 
@@ -282,6 +310,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
                 <button onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})} className="text-[11px] font-black uppercase tracking-widest text-gray-500 hover:text-navy-900 transition-colors">Home</button>
                 <button onClick={() => scrollTo('book-section')} className="text-[11px] font-black uppercase tracking-widest text-gray-500 hover:text-navy-900 transition-colors">Book</button>
                 <button onClick={() => scrollTo('resources-section')} className="text-[11px] font-black uppercase tracking-widest text-gray-500 hover:text-navy-900 transition-colors">Resources</button>
+                <button onClick={() => scrollTo('giving-section')} className="text-[11px] font-black uppercase tracking-widest text-gray-500 hover:text-navy-900 transition-colors">Giving</button>
                 <button onClick={() => scrollTo('ai-preview')} className="text-[11px] font-black uppercase tracking-widest text-gray-500 hover:text-navy-900 transition-colors">AI Mentor</button>
               </div>
             </div>
@@ -379,8 +408,50 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
         </div>
       </section>
 
+      {/* GIVING SECTION */}
+      <section id="giving-section" className="py-32 bg-navy-900 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 pointer-events-none"></div>
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
+          <div className="flex flex-col lg:flex-row justify-between items-end mb-20 gap-8">
+            <div className="max-w-2xl">
+              <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-gold-500 mb-4">The Tenth Law</h2>
+              <h3 className="text-4xl lg:text-5xl font-black text-white font-serif uppercase tracking-tight leading-none mb-6">
+                Design Your <span className="text-gold-400 lowercase italic font-sans font-medium">Impact</span>
+              </h3>
+              <p className="text-lg text-navy-200 font-medium">
+                True wealth architecture isn't just about what you keep—it's about what you build for others. Philanthropy is the capstone of a rich design.
+              </p>
+            </div>
+            <div className="hidden lg:flex items-center gap-4 bg-white/5 p-4 rounded-3xl border border-white/10">
+              <Globe className="w-6 h-6 text-gold-400" />
+              <span className="text-xs font-black text-white uppercase tracking-widest">Global Philanthropic Network</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {charities.map((charity, idx) => (
+              <div key={idx} className="bg-white/5 backdrop-blur-sm p-10 rounded-[3rem] border border-white/10 hover:border-gold-500/50 transition-all hover:-translate-y-2 group">
+                <div className={`w-16 h-16 ${charity.color} rounded-[1.5rem] flex items-center justify-center mb-8 shadow-xl transition-transform group-hover:rotate-6`}>
+                  <charity.icon className="w-8 h-8" />
+                </div>
+                <h4 className="text-2xl font-black text-white mb-4 uppercase tracking-tight">{charity.name}</h4>
+                <p className="text-navy-200 text-sm font-medium leading-relaxed mb-10 min-h-[80px]">
+                  {charity.desc}
+                </p>
+                <button 
+                  onClick={() => window.open(charity.url, '_blank')}
+                  className="w-full py-5 bg-white text-navy-900 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-gold-500 transition-all"
+                >
+                  Contribute Now <ExternalLink className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* AI MENTOR SECTION */}
-      <section id="ai-preview" className="py-32 bg-gray-50">
+      <section id="ai-preview" className="py-32 bg-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="flex flex-col lg:flex-row items-center gap-20">
             <div className="lg:w-1/2">
@@ -446,13 +517,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
       </section>
 
       {/* FINAL CTA SECTION */}
-      <section className="py-32 bg-navy-900 relative overflow-hidden text-center">
+      <section className="py-32 bg-gray-50 relative overflow-hidden text-center">
         <div className="max-w-4xl mx-auto px-6 relative z-10">
-            <h2 className="text-4xl lg:text-6xl font-black text-white font-serif uppercase tracking-tighter mb-8 leading-tight">
+            <h2 className="text-4xl lg:text-6xl font-black text-navy-900 font-serif uppercase tracking-tighter mb-8 leading-tight">
                 Stop Surviving. <br/>
                 <span className="text-gold-500 italic">Start Designing.</span>
             </h2>
-            <Button onClick={() => window.open(book.amazonLink, '_blank')} className="h-20 bg-gold-500 text-navy-900 px-16 text-lg rounded-3xl font-black uppercase tracking-widest shadow-2xl hover:scale-105 transition-transform flex items-center justify-center gap-3 mx-auto">
+            <Button onClick={() => window.open(book.amazonLink, '_blank')} className="h-20 bg-navy-900 text-white px-16 text-lg rounded-3xl font-black uppercase tracking-widest shadow-2xl hover:scale-105 transition-transform flex items-center justify-center gap-3 mx-auto">
                 Secure Your Copy <ArrowRight className="w-6 h-6" />
             </Button>
         </div>
