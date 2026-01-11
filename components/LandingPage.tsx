@@ -138,7 +138,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
       desc: "Providing the structural support and resources our nation's veterans need to thrive in civilian life.",
       url: "https://www.woundedwarriorproject.org/",
       icon: Users,
-      color: "bg-navy-50 text-navy-700"
+      color: "bg-white text-navy-900"
     },
     {
       name: "Habitat for Humanity",
@@ -418,7 +418,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
               <h3 className="text-4xl lg:text-5xl font-black text-white font-serif uppercase tracking-tight leading-none mb-6">
                 Design Your <span className="text-gold-400 lowercase italic font-sans font-medium">Impact</span>
               </h3>
-              <p className="text-lg text-navy-200 font-medium">
+              <p className="text-lg text-white/90 font-medium">
                 True wealth architecture isn't just about what you keep—it's about what you build for others. Philanthropy is the capstone of a rich design.
               </p>
             </div>
@@ -435,7 +435,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ book }) => {
                   <charity.icon className="w-8 h-8" />
                 </div>
                 <h4 className="text-2xl font-black text-white mb-4 uppercase tracking-tight">{charity.name}</h4>
-                <p className="text-navy-200 text-sm font-medium leading-relaxed mb-10 min-h-[80px]">
+                <p className="text-white/80 text-sm font-medium leading-relaxed mb-10 min-h-[80px]">
                   {charity.desc}
                 </p>
                 <button 
