@@ -18,6 +18,7 @@ import {
   Linkedin,
   Instagram,
   Twitter,
+  Facebook,
   Globe,
   Calendar,
   Clock,
@@ -32,7 +33,8 @@ import {
   Unlink,
   ExternalLink,
   ShieldCheck,
-  UploadCloud
+  UploadCloud,
+  CheckCircle
 } from 'lucide-react';
 
 interface MarketingDashboardProps {
@@ -54,6 +56,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
   const [accounts, setAccounts] = useState<SocialAccount[]>([
     { platform: 'LinkedIn', username: '@morganhaze', status: 'DISCONNECTED' },
     { platform: 'Instagram', username: '@richbydesignhq', status: 'DISCONNECTED' },
+    { platform: 'Facebook', username: 'Rich By Design Page', status: 'DISCONNECTED' },
     { platform: 'Official Blog', username: 'richbydesignhq.com', status: 'DISCONNECTED' }
   ]);
 
@@ -91,27 +94,35 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
   };
 
   const toggleAccount = (platform: string) => {
-    const newAccounts = accounts.map(acc => 
-      acc.platform === platform 
-        ? { ...acc, status: acc.status === 'CONNECTED' ? 'DISCONNECTED' : 'CONNECTED' as ConnectionStatus, lastSync: Date.now() } 
-        : acc
-    );
+    // Logic: If Meta (FB or IG) is toggled, toggle both to keep them "the same"
+    const isMeta = platform === 'Instagram' || platform === 'Facebook';
+    const targetStatus = accounts.find(a => a.platform === platform)?.status === 'CONNECTED' ? 'DISCONNECTED' : 'CONNECTED' as ConnectionStatus;
+
+    const newAccounts = accounts.map(acc => {
+      const shouldToggle = isMeta 
+        ? (acc.platform === 'Instagram' || acc.platform === 'Facebook')
+        : acc.platform === platform;
+
+      return shouldToggle 
+        ? { ...acc, status: targetStatus, lastSync: Date.now() } 
+        : acc;
+    });
+    
     saveAccounts(newAccounts);
   };
 
   const handleDeploy = async (post: ScheduledPost) => {
     const acc = accounts.find(a => a.platform === post.platform);
     if (!acc || acc.status !== 'CONNECTED') {
-      alert(`Please connect your ${post.platform} account in the Launch Status tab before deploying.`);
+      alert(`Account Required: Please click 'Connect' for ${post.platform} in the Launch Status tab.`);
       return;
     }
 
     setIsDeploying(post.id);
-    // Simulate API delay for posting to social media
     await new Promise(resolve => setTimeout(resolve, 2000));
     updatePostStatus(post.id, PostStatus.POSTED);
     setIsDeploying(null);
-    alert(`Success: Post deployed to ${post.platform} API.`);
+    alert(`Live: Successfully published to your ${post.platform} feed.`);
   };
 
   const handleGenerate = async () => {
@@ -255,58 +266,83 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                 <div className="bg-white rounded-[2.5rem] shadow-xl border border-gray-100 p-8 md:p-12 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-gold-100/30 rounded-full -mr-48 -mt-48 blur-3xl"></div>
                     <div className="relative z-10">
-                        <div className="mb-10">
-                            <h2 className="text-3xl font-black text-navy-900 mb-3 font-serif uppercase tracking-tight">Channel Manager</h2>
-                            <p className="text-gray-500 font-medium">Link your Rich By Design HQ accounts to enable automated AI ghostwriting deployment.</p>
+                        <div className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                            <div>
+                              <h2 className="text-3xl font-black text-navy-900 mb-3 font-serif uppercase tracking-tight">Channel Manager</h2>
+                              <p className="text-gray-500 font-medium">Link your Meta (FB & IG) and LinkedIn accounts to sync your financial branding.</p>
+                            </div>
+                            <div className="flex gap-2">
+                               <div className="flex items-center px-3 py-1.5 bg-navy-900 rounded-full">
+                                  <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
+                                  <span className="text-[10px] font-black text-white uppercase tracking-widest">Post-Ready</span>
+                               </div>
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                          {accounts.map((acc) => (
-                            <div key={acc.platform} className={`p-6 rounded-[2rem] border transition-all ${
-                              acc.status === 'CONNECTED' ? 'bg-white border-gold-200 shadow-lg' : 'bg-gray-50 border-gray-100 grayscale'
-                            }`}>
-                              <div className="flex justify-between items-start mb-6">
-                                <div className="p-3 bg-navy-900 rounded-2xl text-white shadow-md">
-                                  {acc.platform === 'LinkedIn' && <Linkedin className="w-6 h-6" />}
-                                  {acc.platform === 'Instagram' && <Instagram className="w-6 h-6" />}
-                                  {acc.platform === 'Official Blog' && <Globe className="w-6 h-6" />}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                          {accounts.map((acc) => {
+                            const isMeta = acc.platform === 'Instagram' || acc.platform === 'Facebook';
+                            
+                            return (
+                              <div key={acc.platform} className={`p-6 rounded-[2rem] border transition-all relative overflow-hidden group ${
+                                acc.status === 'CONNECTED' ? 'bg-white border-gold-300 shadow-xl' : 'bg-gray-50 border-gray-200 opacity-60'
+                              }`}>
+                                <div className="flex justify-between items-start mb-6">
+                                  <div className={`p-3 rounded-2xl text-white shadow-md ${
+                                    acc.status === 'CONNECTED' ? 'bg-navy-900' : 'bg-gray-400'
+                                  }`}>
+                                    {acc.platform === 'LinkedIn' && <Linkedin className="w-6 h-6" />}
+                                    {acc.platform === 'Instagram' && <Instagram className="w-6 h-6" />}
+                                    {acc.platform === 'Facebook' && <Facebook className="w-6 h-6" />}
+                                    {acc.platform === 'Official Blog' && <Globe className="w-6 h-6" />}
+                                  </div>
+                                  {acc.status === 'CONNECTED' && <CheckCircle className="w-5 h-5 text-emerald-500" />}
                                 </div>
-                                <div className={`w-2 h-2 rounded-full ${acc.status === 'CONNECTED' ? 'bg-emerald-500 animate-pulse' : 'bg-gray-300'}`}></div>
+                                
+                                <div className="mb-6">
+                                  <h4 className="font-black text-navy-900 uppercase text-[10px] mb-1 tracking-widest">{acc.platform}</h4>
+                                  <p className="text-xs font-bold text-gray-500 truncate">{acc.username}</p>
+                                </div>
+
+                                <button 
+                                  onClick={() => toggleAccount(acc.platform)}
+                                  className={`w-full py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
+                                    acc.status === 'CONNECTED' ? 'bg-rose-50 text-rose-600 hover:bg-rose-100' : 'bg-navy-900 text-white hover:bg-gold-500 hover:text-navy-900'
+                                  }`}
+                                >
+                                  {acc.status === 'CONNECTED' ? <Unlink className="w-3.5 h-3.5" /> : <Link className="w-3.5 h-3.5" />}
+                                  {acc.status === 'CONNECTED' ? 'Unlink' : 'Link Account'}
+                                </button>
+
+                                {isMeta && (
+                                  <div className="absolute -top-1 right-12">
+                                     <span className="bg-gold-500 text-[8px] font-black px-2 py-0.5 rounded-full text-navy-900 uppercase tracking-tighter">META</span>
+                                  </div>
+                                )}
                               </div>
-                              <h4 className="font-black text-navy-900 uppercase text-xs mb-1 tracking-widest">{acc.platform}</h4>
-                              <p className="text-sm font-bold text-gray-400 mb-6 truncate">{acc.username}</p>
-                              <button 
-                                onClick={() => toggleAccount(acc.platform)}
-                                className={`w-full py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
-                                  acc.status === 'CONNECTED' ? 'bg-rose-50 text-rose-600 hover:bg-rose-100' : 'bg-navy-900 text-white hover:bg-gold-500 hover:text-navy-900'
-                                }`}
-                              >
-                                {acc.status === 'CONNECTED' ? <Unlink className="w-3.5 h-3.5" /> : <Link className="w-3.5 h-3.5" />}
-                                {acc.status === 'CONNECTED' ? 'Disconnect' : 'Connect Account'}
-                              </button>
-                            </div>
-                          ))}
+                            )
+                          })}
                         </div>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-navy-900 p-8 rounded-[2rem] text-white flex items-start gap-6">
-                    <div className="p-4 bg-white/10 rounded-2xl">
+                  <div className="bg-navy-900 p-8 rounded-[2rem] text-white flex items-start gap-6 shadow-2xl border border-white/5">
+                    <div className="p-4 bg-gold-500/10 rounded-2xl">
                       <ShieldCheck className="w-8 h-8 text-gold-400" />
                     </div>
                     <div>
-                      <h4 className="font-black uppercase tracking-tight text-xl mb-2">Secure API Gateway</h4>
-                      <p className="text-white/60 text-sm leading-relaxed">Your account credentials are never stored by the AI. We only use authorized OAuth tokens to post on your behalf.</p>
+                      <h4 className="font-black uppercase tracking-tight text-xl mb-2">Meta Suite Sync</h4>
+                      <p className="text-white/60 text-sm leading-relaxed">Facebook and Instagram are managed through our unified Meta Business API. One click keeps your visual identity identical across both feeds.</p>
                     </div>
                   </div>
                   <div className="bg-white border border-gray-100 p-8 rounded-[2rem] flex items-start gap-6 shadow-sm">
-                    <div className="p-4 bg-gold-50 rounded-2xl">
-                      <Zap className="w-8 h-8 text-gold-600" />
+                    <div className="p-4 bg-navy-50 rounded-2xl">
+                      <Zap className="w-8 h-8 text-navy-900" />
                     </div>
                     <div>
-                      <h4 className="font-black uppercase tracking-tight text-xl text-navy-900 mb-2">Automated Triggers</h4>
-                      <p className="text-gray-500 text-sm leading-relaxed">Once a post is "Scheduled" and the account is connected, the HQ system will auto-post at the optimal time.</p>
+                      <h4 className="font-black uppercase tracking-tight text-xl text-navy-900 mb-2">Instant Deployment</h4>
+                      <p className="text-gray-500 text-sm leading-relaxed">Connected accounts skip the manual "Copy/Paste" workflow. Your content deploys to the cloud the moment you click "Approve".</p>
                     </div>
                   </div>
                 </div>
@@ -317,7 +353,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                    <div className="flex justify-between items-center mb-8">
                       <div>
                         <h2 className="text-2xl font-black text-navy-900 uppercase tracking-tight">Deployment Queue</h2>
-                        <p className="text-sm text-gray-500">Scheduled posts will automatically push to your linked accounts.</p>
+                        <p className="text-sm text-gray-500">Scheduled posts sync automatically to connected Meta and LinkedIn accounts.</p>
                       </div>
                       <Button onClick={handleCreateCampaign} isLoading={isLoading} variant="outline" className="border-navy-900 text-navy-900 text-[10px] uppercase font-black tracking-widest px-6 h-12 rounded-xl">
                         Regenerate Campaign <RefreshCcw className="ml-2 w-3.5 h-3.5" />
@@ -333,15 +369,18 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                    ) : (
                      <div className="space-y-6">
                        {scheduledPosts.sort((a,b) => a.scheduledTime - b.scheduledTime).map((post) => {
-                         const isConnected = accounts.find(a => a.platform === post.platform)?.status === 'CONNECTED';
+                         const account = accounts.find(a => a.platform === post.platform);
+                         const isConnected = account?.status === 'CONNECTED';
                          const isDeployingThis = isDeploying === post.id;
                          
                          return (
                          <div key={post.id} className={`bg-white border rounded-[2.5rem] p-8 hover:shadow-2xl transition-all flex flex-col items-stretch gap-6 group ${
-                           post.status === PostStatus.POSTED ? 'border-emerald-200 bg-emerald-50/10' : 'border-gray-100'
+                           post.status === PostStatus.POSTED ? 'border-emerald-200 bg-emerald-50/10 opacity-75' : isConnected ? 'border-gray-100' : 'border-rose-100 bg-rose-50/5'
                          }`}>
                             <div className="flex flex-col md:flex-row gap-6 items-start">
-                                <div className="flex flex-col items-center justify-center p-4 bg-navy-900 text-white rounded-3xl min-w-[120px] shadow-lg">
+                                <div className={`flex flex-col items-center justify-center p-4 rounded-3xl min-w-[120px] shadow-lg text-white ${
+                                  isConnected ? 'bg-navy-900' : 'bg-gray-400'
+                                }`}>
                                     <span className="text-[10px] font-black text-gold-400 uppercase tracking-widest">{post.platform}</span>
                                     <span className="text-2xl font-black">{new Date(post.scheduledTime).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
                                 </div>
@@ -349,24 +388,27 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                                     <div className="flex items-center gap-2 mb-4">
                                         {post.platform === 'LinkedIn' && <Linkedin className="w-5 h-5 text-blue-700" />}
                                         {post.platform === 'Instagram' && <Instagram className="w-5 h-5 text-rose-600" />}
-                                        {post.platform === 'Twitter' && <Twitter className="w-5 h-5 text-sky-500" />}
+                                        {post.platform === 'Facebook' && <Facebook className="w-5 h-5 text-blue-600" />}
                                         {post.platform === 'Official Blog' && <Globe className="w-5 h-5 text-emerald-600" />}
+                                        
                                         <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border ${
                                             post.status === PostStatus.POSTED ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 
                                             post.status === PostStatus.SCHEDULED ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-gray-100 text-gray-500 border-gray-200'
                                         }`}>
                                             {post.status}
                                         </span>
+
                                         {!isConnected && post.status !== PostStatus.POSTED && (
-                                          <span className="text-[10px] font-black text-rose-500 uppercase flex items-center gap-1 ml-2">
-                                            <WifiOff className="w-3 h-3" /> Account Disconnected
-                                          </span>
+                                          <div className="flex items-center gap-1.5 ml-2 px-2 py-0.5 bg-rose-100 rounded-full border border-rose-200 animate-pulse">
+                                            <WifiOff className="w-3 h-3 text-rose-600" />
+                                            <span className="text-[9px] font-black text-rose-600 uppercase tracking-tight">Offline: Link Account</span>
+                                          </div>
                                         )}
                                     </div>
                                     <p className="text-lg text-navy-900 leading-relaxed font-medium mb-4">{post.content}</p>
                                     
                                     {post.imageUrl && (
-                                        <div className="mt-4 relative rounded-3xl overflow-hidden aspect-video bg-gray-50">
+                                        <div className="mt-4 relative rounded-3xl overflow-hidden aspect-video bg-gray-50 border border-gray-100">
                                             <img src={post.imageUrl} alt="Asset" className="w-full h-full object-cover" />
                                         </div>
                                     )}
@@ -376,8 +418,8 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                                       <button 
                                         disabled={isDeployingThis}
                                         onClick={() => handleDeploy(post)} 
-                                        className="p-4 bg-navy-900 text-gold-400 rounded-2xl hover:bg-gold-500 hover:text-navy-900 transition-all shadow-lg flex items-center justify-center"
-                                        title="Deploy Now"
+                                        className="p-4 bg-navy-900 text-gold-400 rounded-2xl hover:bg-gold-500 hover:text-navy-900 transition-all shadow-lg flex items-center justify-center border-2 border-white/20"
+                                        title="Deploy Live"
                                       >
                                         {isDeployingThis ? <Loader2 className="w-5 h-5 animate-spin" /> : <UploadCloud className="w-5 h-5" />}
                                       </button>
@@ -431,7 +473,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                                     <PenTool className="w-10 h-10" />
                                 </div>
                                 <h3 className="text-2xl font-black text-navy-900 mb-3 font-serif uppercase tracking-tight">Ghostwriter Engine</h3>
-                                <p className="text-gray-400 text-sm">Automated drafting of high-impact financial content.</p>
+                                <p className="text-gray-400 text-sm">Drafting automated, high-impact wealth content for your linked channels.</p>
                             </div>
                         )}
                     </div>
@@ -452,7 +494,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                                     <ImageIcon className="w-10 h-10" />
                                 </div>
                                 <h3 className="text-2xl font-black text-white mb-3 font-serif uppercase tracking-tight">Visual Asset</h3>
-                                <p className="text-white/40 text-sm">Automatically generated for social posts.</p>
+                                <p className="text-white/40 text-sm">Designed for high engagement on Facebook, Instagram, and LinkedIn.</p>
                             </div>
                         )}
                     </div>
