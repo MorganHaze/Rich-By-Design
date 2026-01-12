@@ -17,7 +17,6 @@ import {
   MessageSquare,
   Linkedin,
   Instagram,
-  Twitter,
   Facebook,
   Globe,
   Calendar,
@@ -94,7 +93,6 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
   };
 
   const toggleAccount = (platform: string) => {
-    // Logic: If Meta (FB or IG) is toggled, toggle both to keep them "the same"
     const isMeta = platform === 'Instagram' || platform === 'Facebook';
     const targetStatus = accounts.find(a => a.platform === platform)?.status === 'CONNECTED' ? 'DISCONNECTED' : 'CONNECTED' as ConnectionStatus;
 
@@ -114,7 +112,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
   const handleDeploy = async (post: ScheduledPost) => {
     const acc = accounts.find(a => a.platform === post.platform);
     if (!acc || acc.status !== 'CONNECTED') {
-      alert(`Account Required: Please click 'Connect' for ${post.platform} in the Launch Status tab.`);
+      alert(`Account Required: Please click 'Link Account' for ${post.platform} in the Launch Status tab.`);
       return;
     }
 
@@ -184,6 +182,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
+    alert('Copied to clipboard!');
   };
 
   const tabs = [
@@ -269,7 +268,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                         <div className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                             <div>
                               <h2 className="text-3xl font-black text-navy-900 mb-3 font-serif uppercase tracking-tight">Channel Manager</h2>
-                              <p className="text-gray-500 font-medium">Link your Meta (FB & IG) and LinkedIn accounts to sync your financial branding.</p>
+                              <p className="text-gray-500 font-medium">Link your accounts to sync branding across Meta (FB & IG) and LinkedIn.</p>
                             </div>
                             <div className="flex gap-2">
                                <div className="flex items-center px-3 py-1.5 bg-navy-900 rounded-full">
@@ -316,7 +315,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
 
                                 {isMeta && (
                                   <div className="absolute -top-1 right-12">
-                                     <span className="bg-gold-500 text-[8px] font-black px-2 py-0.5 rounded-full text-navy-900 uppercase tracking-tighter">META</span>
+                                     <span className="bg-gold-500 text-[8px] font-black px-2 py-0.5 rounded-full text-navy-900 uppercase tracking-tighter">META SYNC</span>
                                   </div>
                                 )}
                               </div>
@@ -332,8 +331,8 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                       <ShieldCheck className="w-8 h-8 text-gold-400" />
                     </div>
                     <div>
-                      <h4 className="font-black uppercase tracking-tight text-xl mb-2">Meta Suite Sync</h4>
-                      <p className="text-white/60 text-sm leading-relaxed">Facebook and Instagram are managed through our unified Meta Business API. One click keeps your visual identity identical across both feeds.</p>
+                      <h4 className="font-black uppercase tracking-tight text-xl mb-2">Meta Ecosystem Branding</h4>
+                      <p className="text-white/60 text-sm leading-relaxed">Facebook and Instagram are synchronized. When you connect one, our Meta API unifies both platforms to ensure your financial design is consistent across all feeds.</p>
                     </div>
                   </div>
                   <div className="bg-white border border-gray-100 p-8 rounded-[2rem] flex items-start gap-6 shadow-sm">
@@ -341,8 +340,8 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                       <Zap className="w-8 h-8 text-navy-900" />
                     </div>
                     <div>
-                      <h4 className="font-black uppercase tracking-tight text-xl text-navy-900 mb-2">Instant Deployment</h4>
-                      <p className="text-gray-500 text-sm leading-relaxed">Connected accounts skip the manual "Copy/Paste" workflow. Your content deploys to the cloud the moment you click "Approve".</p>
+                      <h4 className="font-black uppercase tracking-tight text-xl text-navy-900 mb-2">Ghostwriter Automation</h4>
+                      <p className="text-gray-500 text-sm leading-relaxed">Rich By Design HQ does not use Twitter. We focus on high-impact visual platforms like Instagram and professional networks like LinkedIn for maximum influence.</p>
                     </div>
                   </div>
                 </div>
@@ -353,7 +352,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                    <div className="flex justify-between items-center mb-8">
                       <div>
                         <h2 className="text-2xl font-black text-navy-900 uppercase tracking-tight">Deployment Queue</h2>
-                        <p className="text-sm text-gray-500">Scheduled posts sync automatically to connected Meta and LinkedIn accounts.</p>
+                        <p className="text-sm text-gray-500">Scheduled posts sync automatically to your linked Meta and LinkedIn accounts.</p>
                       </div>
                       <Button onClick={handleCreateCampaign} isLoading={isLoading} variant="outline" className="border-navy-900 text-navy-900 text-[10px] uppercase font-black tracking-widest px-6 h-12 rounded-xl">
                         Regenerate Campaign <RefreshCcw className="ml-2 w-3.5 h-3.5" />
@@ -364,7 +363,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                      <div className="p-20 text-center bg-gray-50 rounded-[2rem] border-2 border-dashed border-gray-200">
                         <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                         <h3 className="text-lg font-bold text-gray-400 uppercase tracking-widest">Queue Empty</h3>
-                        <p className="text-gray-400 text-xs mt-2">Use the Campaign Architect to generate a sequence.</p>
+                        <p className="text-gray-400 text-xs mt-2">Generate a campaign to start deploying wealth architecture.</p>
                      </div>
                    ) : (
                      <div className="space-y-6">
@@ -401,7 +400,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                                         {!isConnected && post.status !== PostStatus.POSTED && (
                                           <div className="flex items-center gap-1.5 ml-2 px-2 py-0.5 bg-rose-100 rounded-full border border-rose-200 animate-pulse">
                                             <WifiOff className="w-3 h-3 text-rose-600" />
-                                            <span className="text-[9px] font-black text-rose-600 uppercase tracking-tight">Offline: Link Account</span>
+                                            <span className="text-[9px] font-black text-rose-600 uppercase tracking-tight">Action Required: Link Account</span>
                                           </div>
                                         )}
                                     </div>
@@ -473,7 +472,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                                     <PenTool className="w-10 h-10" />
                                 </div>
                                 <h3 className="text-2xl font-black text-navy-900 mb-3 font-serif uppercase tracking-tight">Ghostwriter Engine</h3>
-                                <p className="text-gray-400 text-sm">Drafting automated, high-impact wealth content for your linked channels.</p>
+                                <p className="text-gray-400 text-sm">Automated drafting of high-impact content for LinkedIn and the Meta Suite.</p>
                             </div>
                         )}
                     </div>
@@ -494,7 +493,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                                     <ImageIcon className="w-10 h-10" />
                                 </div>
                                 <h3 className="text-2xl font-black text-white mb-3 font-serif uppercase tracking-tight">Visual Asset</h3>
-                                <p className="text-white/40 text-sm">Designed for high engagement on Facebook, Instagram, and LinkedIn.</p>
+                                <p className="text-white/40 text-sm">Identical infographics are generated for your Facebook and Instagram audience.</p>
                             </div>
                         )}
                     </div>
