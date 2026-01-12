@@ -12,17 +12,29 @@ export enum PostStatus {
   POSTED = 'POSTED'
 }
 
+export type ConnectionStatus = 'CONNECTED' | 'DISCONNECTED' | 'ERROR';
+
+export interface SocialAccount {
+  platform: string;
+  username: string;
+  status: ConnectionStatus;
+  lastSync?: number;
+}
+
 export interface ScheduledPost {
   id: string;
   type: MarketingContentType;
   platform: string;
   content: string;
+  imagePrompt?: string;
+  imageUrl?: string;
   scheduledTime: number;
   status: PostStatus;
 }
 
 export interface MarketingResult {
   content: string;
+  imageUrl?: string;
   type: MarketingContentType;
   timestamp: number;
 }
