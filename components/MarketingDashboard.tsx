@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BookDetails, MarketingContentType, PostStatus, ScheduledPost } from '../types';
-import { generateMarketingContent, generateCampaign } from '../services/geminiService';
+import { generateMarketingContent, generateCampaign, generateMarketingImage } from '../services/geminiService';
 import { Button } from './ui/Button';
 import { 
   Copy, 
@@ -15,10 +15,7 @@ import {
   Rocket, 
   RefreshCcw, 
   ArrowRight,
-  Trophy,
-  AlertCircle,
   MessageSquare,
-  Layout,
   Linkedin,
   Instagram,
   Twitter,
@@ -27,7 +24,12 @@ import {
   Clock,
   Trash2,
   Check,
-  PlayCircle
+  PlayCircle,
+  Image as ImageIcon,
+  Sparkles,
+  Loader2,
+  ArrowDownLeft,
+  LayoutGrid
 } from 'lucide-react';
 
 interface MarketingDashboardProps {
@@ -37,7 +39,9 @@ interface MarketingDashboardProps {
 export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) => {
   const [activeTab, setActiveTab] = useState<string>('STRATEGY');
   const [generatedContent, setGeneratedContent] = useState('');
+  const [generatedImage, setGeneratedImage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isImageLoading, setIsImageLoading] = useState(false);
   const [tone, setTone] = useState('Inspirational & Authoritative');
   const [apiStatus, setApiStatus] = useState<'checking' | 'active' | 'missing'>('checking');
   
@@ -56,7 +60,6 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
         setActiveTab('STRATEGY');
     }
 
-    // Load queue from localStorage
     const savedQueue = localStorage.getItem('rbd_marketing_queue');
     if (savedQueue) {
       setScheduledPosts(JSON.parse(savedQueue));
@@ -70,9 +73,16 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
 
   const handleGenerate = async () => {
     setIsLoading(true);
+    setGeneratedImage('');
     try {
-        const content = await generateMarketingContent(book, activeTab as MarketingContentType, tone);
-        setGeneratedContent(content);
+        const { text, imagePrompt } = await generateMarketingContent(book, activeTab as MarketingContentType, tone);
+        setGeneratedContent(text);
+        if (imagePrompt && activeTab === MarketingContentType.SOCIAL_POST) {
+          setIsImageLoading(true);
+          const img = await generateMarketingImage(imagePrompt);
+          setGeneratedImage(img);
+          setIsImageLoading(false);
+        }
     } catch (err) {
         setGeneratedContent("Error generating content. Please check your network connection.");
     }
@@ -88,6 +98,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
         type: p.type as MarketingContentType,
         platform: p.platform,
         content: p.content,
+        imagePrompt: p.imagePrompt,
         scheduledTime: Date.now() + (p.dayOffset * 86400000),
         status: PostStatus.DRAFT
       }));
@@ -97,6 +108,16 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
       alert("Campaign architecture failed. System recalibrating...");
     }
     setIsLoading(false);
+  };
+
+  const generateImageForQueuedPost = async (id: string, prompt: string) => {
+    const post = scheduledPosts.find(p => p.id === id);
+    if (!post || !prompt) return;
+
+    setIsImageLoading(true);
+    const img = await generateMarketingImage(prompt);
+    saveQueue(scheduledPosts.map(p => p.id === id ? { ...p, imageUrl: img } : p));
+    setIsImageLoading(false);
   };
 
   const updatePostStatus = (id: string, status: PostStatus) => {
@@ -120,16 +141,10 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
     { id: MarketingContentType.EMAIL_NEWSLETTER, label: 'Email Blast', icon: Mail },
   ];
 
-  const tones = [
-    'Inspirational & Authoritative',
-    'Direct & Aggressive',
-    'Educational & Helpful',
-    'Story-driven & Relatable'
-  ];
-
   return (
     <div className="min-h-screen bg-[#F8FAFC] p-4 md:p-12 selection:bg-gold-100">
       <div className="max-w-7xl mx-auto">
+        {/* Header */}
         <div className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
                 <div className="flex items-center gap-2 mb-2">
@@ -157,6 +172,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Sidebar Tabs */}
           <div className="space-y-3">
             {tabs.map((tab) => {
                 const Icon = tab.icon;
@@ -169,7 +185,10 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                         disabled={isLocked}
                         onClick={() => {
                             setActiveTab(tab.id);
-                            if (!['STRATEGY', 'AUTOMATION'].includes(tab.id)) setGeneratedContent('');
+                            if (!['STRATEGY', 'AUTOMATION'].includes(tab.id)) {
+                              setGeneratedContent('');
+                              setGeneratedImage('');
+                            }
                         }}
                         className={`w-full flex items-center px-6 py-4 rounded-[1.25rem] transition-all duration-300 group relative overflow-hidden ${
                         isActive
@@ -192,7 +211,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                         <MessageSquare className="w-3 h-3 mr-2" /> Ghostwriter Tone
                     </h4>
                     <div className="space-y-2">
-                        {tones.map((t) => (
+                        {['Inspirational & Authoritative', 'Direct & Aggressive', 'Educational & Helpful', 'Story-driven & Relatable'].map((t) => (
                             <button
                                 key={t}
                                 onClick={() => setTone(t)}
@@ -208,6 +227,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
             )}
           </div>
 
+          {/* Main Content Area */}
           <div className="lg:col-span-3 space-y-6">
             {activeTab === 'STRATEGY' ? (
               <div className="bg-white rounded-[2.5rem] shadow-xl border border-gray-100 p-8 md:p-16 relative overflow-hidden">
@@ -217,14 +237,14 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                           <h2 className="text-4xl font-black text-navy-900 mb-3 font-serif uppercase tracking-tighter">
                               Campaign Sequence
                           </h2>
-                          <p className="text-gray-500 text-lg max-w-xl">Initiate the 7-day automated wealth blast to dominate your market presence.</p>
+                          <p className="text-gray-500 text-lg max-w-xl">Initiate the 7-day automated wealth blast. The system will generate high-impact educational infographics like the ones that drive viral growth.</p>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
                         <div className="p-8 bg-navy-900 text-white rounded-[2rem] shadow-2xl relative group overflow-hidden">
                            <Zap className="absolute top-4 right-4 text-gold-500 w-8 h-8 opacity-20 group-hover:scale-125 transition-transform" />
                            <h4 className="text-xs font-black uppercase tracking-widest text-gold-400 mb-2">Ghostwriter Core</h4>
-                           <p className="text-xl font-black mb-6 leading-tight">Generate a 7-day automated campaign across all channels.</p>
+                           <p className="text-xl font-black mb-6 leading-tight">Generate a 7-day automated campaign with visual infographics and comparisons.</p>
                            <Button onClick={handleCreateCampaign} isLoading={isLoading} className="w-full bg-gold-500 text-navy-900 py-4 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-white transition-colors">
                              Launch Campaign Architect
                            </Button>
@@ -236,20 +256,8 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                              </div>
                              <h4 className="font-black text-navy-900 uppercase tracking-tight">System Status</h4>
                            </div>
-                           <p className="text-sm text-gray-500 font-medium">Ready to deploy 3,500+ keywords and 14 distinct pieces of content.</p>
+                           <p className="text-sm text-gray-500 font-medium">Ready to deploy educational comparisons (e.g. Income vs Wealth) across all social platforms.</p>
                         </div>
-                      </div>
-
-                      <div className="flex items-start gap-6 p-8 bg-amber-50 rounded-3xl border border-amber-200 shadow-sm">
-                          <div className="bg-amber-500 text-white rounded-2xl p-2.5 shadow-lg shadow-amber-200">
-                              <Globe className="w-6 h-6" />
-                          </div>
-                          <div className="flex-1">
-                              <h4 className="font-black text-amber-900 text-xl tracking-tight uppercase">Domain Health Check</h4>
-                              <p className="text-sm text-amber-800 mt-2 font-medium leading-relaxed">
-                                  Routing for <strong>richbydesignhq.com</strong> is optimized. System is ready for traffic bursts.
-                              </p>
-                          </div>
                       </div>
                   </div>
               </div>
@@ -259,7 +267,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                    <div className="flex justify-between items-center mb-8">
                       <div>
                         <h2 className="text-2xl font-black text-navy-900 uppercase tracking-tight">Marketing Automation Queue</h2>
-                        <p className="text-sm text-gray-500">Review, edit, and approve your AI-ghostwritten content calendar.</p>
+                        <p className="text-sm text-gray-500">Review, generate custom imagery, and approve your content calendar.</p>
                       </div>
                       <Button onClick={handleCreateCampaign} isLoading={isLoading} variant="outline" className="border-navy-900 text-navy-900 text-[10px] uppercase font-black tracking-widest px-6 h-12 rounded-xl">
                         Regenerate Queue <RefreshCcw className="ml-2 w-3.5 h-3.5" />
@@ -273,35 +281,64 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                         <p className="text-gray-400 text-xs mt-2">Generate a campaign to populate your calendar.</p>
                      </div>
                    ) : (
-                     <div className="space-y-4">
+                     <div className="space-y-6">
                        {scheduledPosts.sort((a,b) => a.scheduledTime - b.scheduledTime).map((post) => (
-                         <div key={post.id} className="bg-white border border-gray-100 rounded-[1.5rem] p-6 hover:shadow-lg transition-all flex flex-col md:flex-row gap-6 items-start">
-                            <div className="flex flex-col items-center justify-center p-3 bg-gray-50 rounded-2xl min-w-[100px]">
-                               <span className="text-[10px] font-black text-navy-400 uppercase">{post.platform}</span>
-                               <span className="text-lg font-black text-navy-900">{new Date(post.scheduledTime).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
-                            </div>
-                            <div className="flex-1">
-                               <div className="flex items-center gap-2 mb-2">
-                                  {post.platform === 'LinkedIn' && <Linkedin className="w-4 h-4 text-blue-700" />}
-                                  {post.platform === 'Instagram' && <Instagram className="w-4 h-4 text-rose-600" />}
-                                  {post.platform === 'Twitter' && <Twitter className="w-4 h-4 text-sky-500" />}
-                                  {post.platform === 'Official Blog' && <Globe className="w-4 h-4 text-emerald-600" />}
-                                  <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${
-                                    post.status === PostStatus.SCHEDULED ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-100 text-gray-500'
-                                  }`}>
-                                    {post.status}
-                                  </span>
-                               </div>
-                               <p className="text-sm text-gray-700 leading-relaxed font-medium line-clamp-3">{post.content}</p>
-                            </div>
-                            <div className="flex md:flex-col gap-2">
-                               <button onClick={() => copyToClipboard(post.content)} className="p-3 bg-gray-50 text-gray-600 rounded-xl hover:bg-navy-900 hover:text-white transition-all"><Copy className="w-4 h-4" /></button>
-                               {post.status === PostStatus.DRAFT ? (
-                                 <button onClick={() => updatePostStatus(post.id, PostStatus.SCHEDULED)} className="p-3 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-600 hover:text-white transition-all"><Check className="w-4 h-4" /></button>
-                               ) : (
-                                 <button onClick={() => updatePostStatus(post.id, PostStatus.DRAFT)} className="p-3 bg-gold-50 text-gold-600 rounded-xl hover:bg-gold-500 hover:text-white transition-all"><PlayCircle className="w-4 h-4" /></button>
-                               )}
-                               <button onClick={() => deletePost(post.id)} className="p-3 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-600 hover:text-white transition-all"><Trash2 className="w-4 h-4" /></button>
+                         <div key={post.id} className="bg-white border border-gray-100 rounded-[2.5rem] p-8 hover:shadow-2xl transition-all flex flex-col items-stretch gap-6 group">
+                            <div className="flex flex-col md:flex-row gap-6 items-start">
+                                <div className="flex flex-col items-center justify-center p-4 bg-navy-900 text-white rounded-3xl min-w-[120px] shadow-lg">
+                                    <span className="text-[10px] font-black text-gold-400 uppercase tracking-widest">{post.platform}</span>
+                                    <span className="text-2xl font-black">{new Date(post.scheduledTime).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                                </div>
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        {post.platform === 'LinkedIn' && <Linkedin className="w-5 h-5 text-blue-700" />}
+                                        {post.platform === 'Instagram' && <Instagram className="w-5 h-5 text-rose-600" />}
+                                        {post.platform === 'Twitter' && <Twitter className="w-5 h-5 text-sky-500" />}
+                                        {post.platform === 'Official Blog' && <Globe className="w-5 h-5 text-emerald-600" />}
+                                        <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${
+                                            post.status === PostStatus.SCHEDULED ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-gray-100 text-gray-500 border border-gray-200'
+                                        }`}>
+                                            {post.status}
+                                        </span>
+                                    </div>
+                                    <h4 className="text-sm font-black text-navy-400 uppercase tracking-widest mb-2 flex items-center">
+                                      <LayoutGrid className="w-3 h-3 mr-2" /> Content Preview
+                                    </h4>
+                                    <p className="text-lg text-navy-900 leading-relaxed font-medium mb-4">{post.content}</p>
+                                    
+                                    {/* Image Section in Queue Card */}
+                                    <div className="mt-6 border-t border-gray-50 pt-6">
+                                        {post.imageUrl ? (
+                                            <div className="relative rounded-3xl overflow-hidden group/img aspect-video bg-gray-50">
+                                                <img src={post.imageUrl} alt="Generated Asset" className="w-full h-full object-cover" />
+                                                <div className="absolute inset-0 bg-navy-900/60 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                                                    <button onClick={() => generateImageForQueuedPost(post.id, post.imagePrompt || post.content)} className="p-4 bg-white rounded-2xl text-navy-900 font-bold flex items-center gap-2 shadow-xl hover:scale-105 transition-transform">
+                                                        <RefreshCcw className="w-5 h-5" /> Re-generate Infographic
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <button 
+                                                onClick={() => generateImageForQueuedPost(post.id, post.imagePrompt || post.content)}
+                                                className="w-full h-44 border-2 border-dashed border-gray-200 rounded-3xl flex flex-col items-center justify-center text-gray-400 hover:border-gold-500 hover:bg-gold-50/50 hover:text-gold-600 transition-all gap-3"
+                                            >
+                                                <div className="p-4 bg-white rounded-full shadow-sm">
+                                                  {isImageLoading ? <Loader2 className="w-6 h-6 animate-spin text-gold-500" /> : <Sparkles className="w-6 h-6 text-gold-500" />}
+                                                </div>
+                                                <span className="text-xs font-black uppercase tracking-widest">Generate Comparison Infographic</span>
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="flex md:flex-col gap-3">
+                                    <button onClick={() => copyToClipboard(post.content)} className="p-4 bg-gray-50 text-gray-600 rounded-2xl hover:bg-navy-900 hover:text-white transition-all shadow-sm"><Copy className="w-5 h-5" /></button>
+                                    {post.status === PostStatus.DRAFT ? (
+                                        <button onClick={() => updatePostStatus(post.id, PostStatus.SCHEDULED)} className="p-4 bg-emerald-50 text-emerald-600 rounded-2xl hover:bg-emerald-600 hover:text-white transition-all shadow-sm"><Check className="w-5 h-5" /></button>
+                                    ) : (
+                                        <button onClick={() => updatePostStatus(post.id, PostStatus.DRAFT)} className="p-4 bg-gold-50 text-gold-600 rounded-2xl hover:bg-gold-500 hover:text-white transition-all shadow-sm"><PlayCircle className="w-5 h-5" /></button>
+                                    )}
+                                    <button onClick={() => deletePost(post.id)} className="p-4 bg-rose-50 text-rose-600 rounded-2xl hover:bg-rose-600 hover:text-white transition-all shadow-sm"><Trash2 className="w-5 h-5" /></button>
+                                </div>
                             </div>
                          </div>
                        ))}
@@ -319,31 +356,60 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                           </h2>
                       </div>
                       <Button onClick={handleGenerate} isLoading={isLoading} className="bg-navy-900 hover:bg-navy-950 px-10 py-7 h-auto text-sm font-black uppercase tracking-widest rounded-2xl shadow-xl">
-                          Generate Content
+                          Generate New Post
                           <ArrowRight className="ml-3 w-5 h-5" />
                       </Button>
                   </div>
 
-                  {generatedContent ? (
-                      <div className="relative group animate-in fade-in slide-in-from-bottom-4">
-                          <div className="bg-gray-50/50 rounded-[2rem] p-8 border border-gray-200 prose prose-slate max-w-none whitespace-pre-wrap text-gray-800 font-sans leading-relaxed min-h-[400px] text-lg">
-                              {generatedContent}
-                          </div>
-                          <div className="absolute top-4 right-4 flex gap-2">
-                              <button onClick={() => copyToClipboard(generatedContent)} className="p-4 bg-white rounded-2xl shadow-lg border border-gray-100 text-navy-900 hover:bg-navy-900 hover:text-white transition-all">
-                                  <Copy className="w-5 h-5" />
-                              </button>
-                          </div>
-                      </div>
-                  ) : (
-                  <div className="bg-gray-50/50 rounded-[3rem] p-24 text-center border-2 border-dashed border-gray-200">
-                      <div className="mx-auto h-24 w-24 bg-white rounded-[2rem] shadow-sm flex items-center justify-center text-gold-500 mb-8">
-                          <PenTool className="w-10 h-10" />
-                      </div>
-                      <h3 className="text-2xl font-black text-navy-900 mb-3 font-serif uppercase tracking-tight">Ready for Input</h3>
-                      <p className="text-gray-400 font-medium">Click generate to let your AI ghostwriter create new content.</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-6">
+                        {generatedContent ? (
+                            <div className="relative group animate-in fade-in slide-in-from-bottom-4">
+                                <div className="bg-gray-50/50 rounded-[2rem] p-8 border border-gray-200 prose prose-slate max-w-none whitespace-pre-wrap text-gray-800 font-sans leading-relaxed min-h-[400px] text-lg">
+                                    {generatedContent}
+                                </div>
+                                <div className="absolute top-4 right-4">
+                                    <button onClick={() => copyToClipboard(generatedContent)} className="p-4 bg-white rounded-2xl shadow-lg border border-gray-100 text-navy-900 hover:bg-navy-900 hover:text-white transition-all">
+                                        <Copy className="w-5 h-5" />
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="bg-gray-50/50 rounded-[3rem] p-24 text-center border-2 border-dashed border-gray-200 h-full flex flex-col items-center justify-center">
+                                <div className="mx-auto h-24 w-24 bg-white rounded-[2rem] shadow-sm flex items-center justify-center text-gold-500 mb-8">
+                                    <PenTool className="w-10 h-10" />
+                                </div>
+                                <h3 className="text-2xl font-black text-navy-900 mb-3 font-serif uppercase tracking-tight">Ready for Copy</h3>
+                                <p className="text-gray-400 text-sm">Automated ghostwriting engine is ready to draft your next financial law post.</p>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="space-y-6">
+                        {isImageLoading ? (
+                             <div className="h-full min-h-[400px] bg-navy-900 rounded-[3rem] flex flex-col items-center justify-center text-white p-12 text-center gap-6">
+                                <Loader2 className="w-16 h-16 text-gold-500 animate-spin" />
+                                <p className="text-xl font-serif italic text-gold-100">Architecting comparison visuals...</p>
+                             </div>
+                        ) : generatedImage ? (
+                            <div className="rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white group relative aspect-square">
+                                <img src={generatedImage} alt="Social Asset" className="w-full h-full object-cover" />
+                                <div className="absolute bottom-6 left-6 right-6 p-4 bg-white/90 backdrop-blur rounded-2xl border border-gray-100 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-3">
+                                   <ArrowDownLeft className="text-navy-900 w-5 h-5" />
+                                   <span className="text-[10px] font-black uppercase text-navy-900 tracking-widest">Designed for High-Engagement Growth</span>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="bg-navy-900 rounded-[3rem] p-24 text-center border-2 border-dashed border-white/10 h-full flex flex-col items-center justify-center">
+                                <div className="mx-auto h-24 w-24 bg-white/5 rounded-[2rem] shadow-sm flex items-center justify-center text-gold-500 mb-8">
+                                    <ImageIcon className="w-10 h-10" />
+                                </div>
+                                <h3 className="text-2xl font-black text-white mb-3 font-serif uppercase tracking-tight">Comparison Graphic</h3>
+                                <p className="text-white/40 text-sm">Infographics (like Character A vs B) are automatically generated for social posts to boost engagement.</p>
+                            </div>
+                        )}
+                    </div>
                   </div>
-                  )}
               </div>
             )}
           </div>
