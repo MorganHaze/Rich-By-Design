@@ -42,7 +42,7 @@ export const generateMarketingContent = async (
   let strategicTask = "";
   switch (type) {
     case MarketingContentType.SOCIAL_POST:
-      strategicTask = `Create 1 high-impact social media post. Focus on the contrast between "Income" and "Wealth" or "Luck" and "Design". Include a detailed description for an accompanying side-by-side comparison infographic.`;
+      strategicTask = `Create 1 high-impact social media post. This post will be shared IDENTICALLY across Instagram and Facebook. Focus on the contrast between "Income" and "Wealth" or "Luck" and "Design". Include a detailed description for an accompanying side-by-side comparison infographic.`;
       break;
     case MarketingContentType.EMAIL_NEWSLETTER:
       strategicTask = `Draft a high-conversion sales email for "${book.title}".`;
@@ -61,7 +61,7 @@ export const generateMarketingContent = async (
     BOOK: ${book.title}
     TONE: ${tone}
     
-    If it's a social post, provide the content and a separate "image_prompt" field describing a visual comparison (e.g., Character A vs Character B, or Bad System vs Good System). 
+    If it's a social post, provide the content and a separate "image_prompt" field describing a visual comparison. 
     Return as JSON.`,
     config: {
       responseMimeType: "application/json",
@@ -92,13 +92,13 @@ export const generateCampaign = async (
     Return a JSON array of posts.
     Each object must have: 
     - "type": "SOCIAL_POST" or "BLOG_FULL"
-    - "platform": (e.g., "LinkedIn", "Instagram", "Twitter", "Official Blog")
+    - "platform": (MUST BE one of: "LinkedIn", "Instagram", "Facebook", "Official Blog")
     - "content": The full text content.
     - "imagePrompt": A detailed description for an AI image generator to create a side-by-side comparison infographic or a visual metaphor of wealth architecture.
     - "dayOffset": (number from 0 to ${durationDays - 1})
     - "headline": (short title for the post)
 
-    Focus on the "Seven Laws" and specifically include posts that compare different financial paths (e.g. The Spender vs The Architect).`,
+    IMPORTANT: Rich By Design HQ does NOT use Twitter. Ensure Facebook and Instagram posts are identical in content and visual prompt to maintain brand consistency.`,
     config: {
       responseMimeType: "application/json",
       responseSchema: {
