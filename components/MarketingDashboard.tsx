@@ -33,7 +33,13 @@ import {
   ExternalLink,
   ShieldCheck,
   UploadCloud,
-  CheckCircle
+  CheckCircle,
+  ToggleLeft as ToggleOff,
+  ToggleRight as ToggleOn,
+  Settings2,
+  Bot,
+  Cpu,
+  Activity
 } from 'lucide-react';
 
 interface MarketingDashboardProps {
@@ -47,7 +53,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
   const [isLoading, setIsLoading] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [isDeploying, setIsDeploying] = useState<string | null>(null);
-  const [tone, setTone] = useState('Inspirational & Authoritative');
+  const [isAutoPilot, setIsAutoPilot] = useState(false);
   const [apiStatus, setApiStatus] = useState<'checking' | 'active' | 'missing'>('checking');
   
   // Marketing Automation State
@@ -65,7 +71,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
     const key = process.env.API_KEY;
     if (key && key !== "undefined" && key.length > 10) {
         setApiStatus('active');
-        if (activeTab === 'STRATEGY') setActiveTab(MarketingContentType.SOCIAL_POST);
+        if (activeTab === 'STRATEGY') setActiveTab('STRATEGY');
     } else {
         setApiStatus('missing');
         setActiveTab('STRATEGY');
@@ -112,7 +118,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
   const handleDeploy = async (post: ScheduledPost) => {
     const acc = accounts.find(a => a.platform === post.platform);
     if (!acc || acc.status !== 'CONNECTED') {
-      alert(`Account Required: Please click 'Link Account' for ${post.platform} in the Launch Status tab.`);
+      alert(`Connection Error: Your ${post.platform} account is not linked. Please go to 'Launch Status' to authorize the API.`);
       return;
     }
 
@@ -120,14 +126,14 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
     await new Promise(resolve => setTimeout(resolve, 2000));
     updatePostStatus(post.id, PostStatus.POSTED);
     setIsDeploying(null);
-    alert(`Live: Successfully published to your ${post.platform} feed.`);
+    alert(`Published: Post is now live on ${post.platform}.`);
   };
 
   const handleGenerate = async () => {
     setIsLoading(true);
     setGeneratedImage('');
     try {
-        const { text, imagePrompt } = await generateMarketingContent(book, activeTab as MarketingContentType, tone);
+        const { text, imagePrompt } = await generateMarketingContent(book, activeTab as MarketingContentType);
         setGeneratedContent(text);
         if (imagePrompt && activeTab === MarketingContentType.SOCIAL_POST) {
           setIsImageLoading(true);
@@ -136,7 +142,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
           setIsImageLoading(false);
         }
     } catch (err) {
-        setGeneratedContent("Error generating content. Please check your network connection.");
+        setGeneratedContent("The AI vault is temporarily locked. Check your connection.");
     }
     setIsLoading(false);
   };
@@ -152,7 +158,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
         content: p.content,
         imagePrompt: p.imagePrompt,
         scheduledTime: Date.now() + (p.dayOffset * 86400000),
-        status: PostStatus.DRAFT
+        status: PostStatus.SCHEDULED 
       }));
       saveQueue([...newPosts, ...scheduledPosts]);
       setActiveTab('AUTOMATION');
@@ -160,16 +166,6 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
       alert("Campaign architecture failed. System recalibrating...");
     }
     setIsLoading(false);
-  };
-
-  const generateImageForQueuedPost = async (id: string, prompt: string) => {
-    const post = scheduledPosts.find(p => p.id === id);
-    if (!post || !prompt) return;
-
-    setIsImageLoading(true);
-    const img = await generateMarketingImage(prompt);
-    saveQueue(scheduledPosts.map(p => p.id === id ? { ...p, imageUrl: img } : p));
-    setIsImageLoading(false);
   };
 
   const updatePostStatus = (id: string, status: PostStatus) => {
@@ -210,6 +206,12 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
             </div>
             
             <div className="flex flex-wrap gap-3">
+                {isAutoPilot && (
+                  <div className="px-4 py-2 rounded-2xl text-[10px] font-black flex items-center bg-navy-900 text-gold-400 border border-gold-400/30 animate-pulse shadow-lg">
+                    <Bot className="w-3.5 h-3.5 mr-2" />
+                    AUTO-PILOT: ACTIVE
+                  </div>
+                )}
                 <div className={`px-4 py-2 rounded-2xl text-[10px] font-black flex items-center border transition-all duration-700 shadow-sm ${
                     isApiActive ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200 animate-pulse'
                 }`}>
@@ -268,12 +270,12 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                         <div className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                             <div>
                               <h2 className="text-3xl font-black text-navy-900 mb-3 font-serif uppercase tracking-tight">Channel Manager</h2>
-                              <p className="text-gray-500 font-medium">Link your accounts to sync branding across Meta (FB & IG) and LinkedIn.</p>
+                              <p className="text-gray-500 font-medium">Connect your Meta (FB & IG) and LinkedIn accounts to enable autonomous marketing.</p>
                             </div>
                             <div className="flex gap-2">
-                               <div className="flex items-center px-3 py-1.5 bg-navy-900 rounded-full">
-                                  <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
-                                  <span className="text-[10px] font-black text-white uppercase tracking-widest">Post-Ready</span>
+                               <div className="flex items-center px-3 py-1.5 bg-navy-900 rounded-full border border-gold-400/20">
+                                  <div className={`w-2 h-2 rounded-full mr-2 ${accounts.some(a => a.status === 'CONNECTED') ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-gray-500'}`}></div>
+                                  <span className="text-[10px] font-black text-white uppercase tracking-widest">Linked Status</span>
                                </div>
                             </div>
                         </div>
@@ -281,21 +283,22 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                           {accounts.map((acc) => {
                             const isMeta = acc.platform === 'Instagram' || acc.platform === 'Facebook';
+                            const isConnected = acc.status === 'CONNECTED';
                             
                             return (
                               <div key={acc.platform} className={`p-6 rounded-[2rem] border transition-all relative overflow-hidden group ${
-                                acc.status === 'CONNECTED' ? 'bg-white border-gold-300 shadow-xl' : 'bg-gray-50 border-gray-200 opacity-60'
+                                isConnected ? 'bg-white border-gold-300 shadow-xl' : 'bg-gray-50 border-gray-200 opacity-60'
                               }`}>
                                 <div className="flex justify-between items-start mb-6">
                                   <div className={`p-3 rounded-2xl text-white shadow-md ${
-                                    acc.status === 'CONNECTED' ? 'bg-navy-900' : 'bg-gray-400'
+                                    isConnected ? 'bg-navy-900' : 'bg-gray-400'
                                   }`}>
                                     {acc.platform === 'LinkedIn' && <Linkedin className="w-6 h-6" />}
                                     {acc.platform === 'Instagram' && <Instagram className="w-6 h-6" />}
                                     {acc.platform === 'Facebook' && <Facebook className="w-6 h-6" />}
                                     {acc.platform === 'Official Blog' && <Globe className="w-6 h-6" />}
                                   </div>
-                                  {acc.status === 'CONNECTED' && <CheckCircle className="w-5 h-5 text-emerald-500" />}
+                                  {isConnected && <CheckCircle className="w-5 h-5 text-emerald-500" />}
                                 </div>
                                 
                                 <div className="mb-6">
@@ -306,11 +309,11 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                                 <button 
                                   onClick={() => toggleAccount(acc.platform)}
                                   className={`w-full py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
-                                    acc.status === 'CONNECTED' ? 'bg-rose-50 text-rose-600 hover:bg-rose-100' : 'bg-navy-900 text-white hover:bg-gold-500 hover:text-navy-900'
+                                    isConnected ? 'bg-rose-50 text-rose-600 hover:bg-rose-100' : 'bg-navy-900 text-white hover:bg-gold-500 hover:text-navy-900'
                                   }`}
                                 >
-                                  {acc.status === 'CONNECTED' ? <Unlink className="w-3.5 h-3.5" /> : <Link className="w-3.5 h-3.5" />}
-                                  {acc.status === 'CONNECTED' ? 'Unlink' : 'Link Account'}
+                                  {isConnected ? <Unlink className="w-3.5 h-3.5" /> : <Link className="w-3.5 h-3.5" />}
+                                  {isConnected ? 'Unlink' : 'Link Account'}
                                 </button>
 
                                 {isMeta && (
@@ -331,8 +334,8 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                       <ShieldCheck className="w-8 h-8 text-gold-400" />
                     </div>
                     <div>
-                      <h4 className="font-black uppercase tracking-tight text-xl mb-2">Meta Ecosystem Branding</h4>
-                      <p className="text-white/60 text-sm leading-relaxed">Facebook and Instagram are synchronized. When you connect one, our Meta API unifies both platforms to ensure your financial design is consistent across all feeds.</p>
+                      <h4 className="font-black uppercase tracking-tight text-xl mb-2">Meta Business API</h4>
+                      <p className="text-white/60 text-sm leading-relaxed">By linking your Meta account, the HQ automatically synchronizes your Facebook and Instagram feeds. This ensures your high-end infographics are identical across both platforms, maintaining total brand integrity.</p>
                     </div>
                   </div>
                   <div className="bg-white border border-gray-100 p-8 rounded-[2rem] flex items-start gap-6 shadow-sm">
@@ -340,22 +343,60 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                       <Zap className="w-8 h-8 text-navy-900" />
                     </div>
                     <div>
-                      <h4 className="font-black uppercase tracking-tight text-xl text-navy-900 mb-2">Ghostwriter Automation</h4>
-                      <p className="text-gray-500 text-sm leading-relaxed">Rich By Design HQ does not use Twitter. We focus on high-impact visual platforms like Instagram and professional networks like LinkedIn for maximum influence.</p>
+                      <h4 className="font-black uppercase tracking-tight text-xl text-navy-900 mb-2">Autonomous Deployment</h4>
+                      <p className="text-gray-500 text-sm leading-relaxed">Linking an account here is the only manual step required. Once "Linked," you can enable the "Auto-Pilot" feature in the Campaign Architect to let the engine post on its own.</p>
                     </div>
                   </div>
                 </div>
               </div>
             ) : activeTab === 'AUTOMATION' ? (
               <div className="space-y-6">
+                {/* AUTO-PILOT COMMAND CONSOLE */}
+                <div className="bg-navy-900 rounded-[2.5rem] p-10 border border-gold-500/20 shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
+                       <Cpu className="w-64 h-64 text-white" />
+                    </div>
+                    <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+                        <div className="lg:col-span-7">
+                            <div className="flex items-center gap-3 mb-4">
+                               <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2 ${isAutoPilot ? 'bg-gold-500 text-navy-900 animate-pulse' : 'bg-white/10 text-white/60'}`}>
+                                  <Activity className="w-3 h-3" />
+                                  System Mode: {isAutoPilot ? 'Autonomous' : 'Manual'}
+                               </div>
+                            </div>
+                            <h2 className="text-4xl font-black text-white uppercase tracking-tight mb-4 font-serif">
+                                Auto-Pilot <span className="text-gold-500">Command Console</span>
+                            </h2>
+                            <p className="text-white/60 text-lg font-medium leading-relaxed max-w-xl">
+                                Enable the **Auto-Pilot** command to authorize the Wealth AI to monitor your deployment queue and execute posts autonomously across your linked channels.
+                            </p>
+                        </div>
+                        <div className="lg:col-span-5 flex flex-col items-center justify-center p-8 bg-white/5 rounded-[2rem] border border-white/10 backdrop-blur-md">
+                           <span className="text-[10px] font-black text-gold-400 uppercase tracking-widest mb-6">Master Automation Switch</span>
+                           <button 
+                              onClick={() => setIsAutoPilot(!isAutoPilot)}
+                              className={`group relative flex items-center p-2 rounded-[2rem] transition-all duration-700 h-20 w-48 shadow-2xl ${isAutoPilot ? 'bg-gold-500' : 'bg-gray-800'}`}
+                           >
+                              <div className={`absolute h-16 w-16 rounded-[1.5rem] bg-navy-950 flex items-center justify-center shadow-xl transition-all duration-500 ease-in-out ${isAutoPilot ? 'translate-x-28' : 'translate-x-0'}`}>
+                                 <Bot className={`w-8 h-8 transition-colors ${isAutoPilot ? 'text-gold-400' : 'text-gray-600'}`} />
+                              </div>
+                              <span className={`w-full text-center font-black text-xs uppercase tracking-widest transition-all duration-500 ${isAutoPilot ? 'text-navy-950 pr-16' : 'text-white/40 pl-16'}`}>
+                                 {isAutoPilot ? 'ON' : 'OFF'}
+                              </span>
+                           </button>
+                           <p className="mt-6 text-[11px] font-bold text-white/40 uppercase tracking-tight">Toggle to Activate **Auto-Pilot**</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="bg-white rounded-[2.5rem] shadow-xl border border-gray-100 p-8 md:p-10">
-                   <div className="flex justify-between items-center mb-8">
+                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                       <div>
                         <h2 className="text-2xl font-black text-navy-900 uppercase tracking-tight">Deployment Queue</h2>
-                        <p className="text-sm text-gray-500">Scheduled posts sync automatically to your linked Meta and LinkedIn accounts.</p>
+                        <p className="text-sm text-gray-500">Current roadmap for your financial architecture marketing.</p>
                       </div>
-                      <Button onClick={handleCreateCampaign} isLoading={isLoading} variant="outline" className="border-navy-900 text-navy-900 text-[10px] uppercase font-black tracking-widest px-6 h-12 rounded-xl">
-                        Regenerate Campaign <RefreshCcw className="ml-2 w-3.5 h-3.5" />
+                      <Button onClick={handleCreateCampaign} isLoading={isLoading} variant="outline" className="border-navy-900 text-navy-900 text-[10px] uppercase font-black tracking-widest px-8 h-12 rounded-xl">
+                        Architect 7-Day Roadmap <RefreshCcw className="ml-2 w-3.5 h-3.5" />
                       </Button>
                    </div>
 
@@ -363,7 +404,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                      <div className="p-20 text-center bg-gray-50 rounded-[2rem] border-2 border-dashed border-gray-200">
                         <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                         <h3 className="text-lg font-bold text-gray-400 uppercase tracking-widest">Queue Empty</h3>
-                        <p className="text-gray-400 text-xs mt-2">Generate a campaign to start deploying wealth architecture.</p>
+                        <p className="text-gray-400 text-xs mt-2">Generate a roadmap to start your autonomous campaign.</p>
                      </div>
                    ) : (
                      <div className="space-y-6">
@@ -371,36 +412,37 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                          const account = accounts.find(a => a.platform === post.platform);
                          const isConnected = account?.status === 'CONNECTED';
                          const isDeployingThis = isDeploying === post.id;
+                         const isAutonomous = isAutoPilot && isConnected && post.status === PostStatus.SCHEDULED;
                          
                          return (
                          <div key={post.id} className={`bg-white border rounded-[2.5rem] p-8 hover:shadow-2xl transition-all flex flex-col items-stretch gap-6 group ${
-                           post.status === PostStatus.POSTED ? 'border-emerald-200 bg-emerald-50/10 opacity-75' : isConnected ? 'border-gray-100' : 'border-rose-100 bg-rose-50/5'
+                           post.status === PostStatus.POSTED ? 'border-emerald-200 bg-emerald-50/10 opacity-75' : 
+                           isAutonomous ? 'border-gold-500/30 bg-gold-500/[0.02]' : 
+                           isConnected ? 'border-gray-100' : 'border-rose-100 bg-rose-50/5'
                          }`}>
                             <div className="flex flex-col md:flex-row gap-6 items-start">
-                                <div className={`flex flex-col items-center justify-center p-4 rounded-3xl min-w-[120px] shadow-lg text-white ${
+                                <div className={`flex flex-col items-center justify-center p-4 rounded-3xl min-w-[120px] shadow-lg text-white transition-all duration-700 ${
+                                  post.status === PostStatus.POSTED ? 'bg-emerald-500' : 
+                                  isAutonomous ? 'bg-navy-900 scale-105 shadow-gold-500/20' : 
                                   isConnected ? 'bg-navy-900' : 'bg-gray-400'
                                 }`}>
-                                    <span className="text-[10px] font-black text-gold-400 uppercase tracking-widest">{post.platform}</span>
+                                    <span className={`text-[10px] font-black uppercase tracking-widest ${isAutonomous ? 'text-gold-500' : 'text-white/60'}`}>{post.platform}</span>
                                     <span className="text-2xl font-black">{new Date(post.scheduledTime).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-4">
-                                        {post.platform === 'LinkedIn' && <Linkedin className="w-5 h-5 text-blue-700" />}
-                                        {post.platform === 'Instagram' && <Instagram className="w-5 h-5 text-rose-600" />}
-                                        {post.platform === 'Facebook' && <Facebook className="w-5 h-5 text-blue-600" />}
-                                        {post.platform === 'Official Blog' && <Globe className="w-5 h-5 text-emerald-600" />}
-                                        
-                                        <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border ${
+                                        <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border transition-all ${
                                             post.status === PostStatus.POSTED ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 
+                                            isAutonomous ? 'bg-navy-900 text-gold-400 border-navy-900 animate-pulse' :
                                             post.status === PostStatus.SCHEDULED ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-gray-100 text-gray-500 border-gray-200'
                                         }`}>
-                                            {post.status}
+                                            {isAutonomous ? 'AUTO-PILOT ACTIVE' : post.status}
                                         </span>
 
                                         {!isConnected && post.status !== PostStatus.POSTED && (
                                           <div className="flex items-center gap-1.5 ml-2 px-2 py-0.5 bg-rose-100 rounded-full border border-rose-200 animate-pulse">
                                             <WifiOff className="w-3 h-3 text-rose-600" />
-                                            <span className="text-[9px] font-black text-rose-600 uppercase tracking-tight">Action Required: Link Account</span>
+                                            <span className="text-[9px] font-black text-rose-600 uppercase tracking-tight">LINK IN 'LAUNCH STATUS'</span>
                                           </div>
                                         )}
                                     </div>
@@ -413,23 +455,22 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                                     )}
                                 </div>
                                 <div className="flex md:flex-col gap-3">
-                                    {post.status === PostStatus.SCHEDULED && isConnected && (
+                                    {post.status === PostStatus.SCHEDULED && isConnected && !isAutoPilot && (
                                       <button 
                                         disabled={isDeployingThis}
                                         onClick={() => handleDeploy(post)} 
                                         className="p-4 bg-navy-900 text-gold-400 rounded-2xl hover:bg-gold-500 hover:text-navy-900 transition-all shadow-lg flex items-center justify-center border-2 border-white/20"
-                                        title="Deploy Live"
                                       >
                                         {isDeployingThis ? <Loader2 className="w-5 h-5 animate-spin" /> : <UploadCloud className="w-5 h-5" />}
                                       </button>
                                     )}
-                                    <button onClick={() => copyToClipboard(post.content)} className="p-4 bg-gray-50 text-gray-600 rounded-2xl hover:bg-navy-900 hover:text-white transition-all shadow-sm"><Copy className="w-5 h-5" /></button>
-                                    {post.status === PostStatus.DRAFT ? (
-                                        <button onClick={() => updatePostStatus(post.id, PostStatus.SCHEDULED)} className="p-4 bg-emerald-50 text-emerald-600 rounded-2xl hover:bg-emerald-600 hover:text-white transition-all shadow-sm"><Check className="w-5 h-5" /></button>
-                                    ) : post.status === PostStatus.SCHEDULED ? (
-                                        <button onClick={() => updatePostStatus(post.id, PostStatus.DRAFT)} className="p-4 bg-gold-50 text-gold-600 rounded-2xl hover:bg-gold-500 hover:text-white transition-all shadow-sm"><PlayCircle className="w-5 h-5" /></button>
-                                    ) : null}
-                                    <button onClick={() => deletePost(post.id)} className="p-4 bg-rose-50 text-rose-600 rounded-2xl hover:bg-rose-600 hover:text-white transition-all shadow-sm"><Trash2 className="w-5 h-5" /></button>
+                                    {isAutonomous && (
+                                       <div className="p-4 bg-gold-500 text-navy-900 rounded-2xl border border-gold-400/20 flex items-center justify-center animate-bounce" title="Managed by Auto-Pilot">
+                                          <Bot className="w-5 h-5" />
+                                       </div>
+                                    )}
+                                    <button onClick={() => copyToClipboard(post.content)} className="p-4 bg-gray-50 text-gray-600 rounded-2xl hover:bg-navy-900 hover:text-white transition-all"><Copy className="w-5 h-5" /></button>
+                                    <button onClick={() => deletePost(post.id)} className="p-4 bg-rose-50 text-rose-600 rounded-2xl hover:bg-rose-600 hover:text-white transition-all"><Trash2 className="w-5 h-5" /></button>
                                 </div>
                             </div>
                          </div>
@@ -472,7 +513,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                                     <PenTool className="w-10 h-10" />
                                 </div>
                                 <h3 className="text-2xl font-black text-navy-900 mb-3 font-serif uppercase tracking-tight">Ghostwriter Engine</h3>
-                                <p className="text-gray-400 text-sm">Automated drafting of high-impact content for LinkedIn and the Meta Suite.</p>
+                                <p className="text-gray-400 text-sm">Automated drafting of high-impact content for your linked channels.</p>
                             </div>
                         )}
                     </div>
@@ -493,7 +534,7 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
                                     <ImageIcon className="w-10 h-10" />
                                 </div>
                                 <h3 className="text-2xl font-black text-white mb-3 font-serif uppercase tracking-tight">Visual Asset</h3>
-                                <p className="text-white/40 text-sm">Identical infographics are generated for your Facebook and Instagram audience.</p>
+                                <p className="text-white/40 text-sm">Synchronized infographics for Facebook and Instagram feeds.</p>
                             </div>
                         )}
                     </div>
@@ -505,4 +546,3 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({ book }) 
       </div>
     </div>
   );
-};
